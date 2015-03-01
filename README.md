@@ -1,5 +1,8 @@
 # MinePanel
 A simple GUI for running your Minecraft server. Will show output, will allow you to easily edit properties, etc.
+This is not meant for large server owners (i.e. companies with rentable servers), but more for the average Joe who doesn't know what all the settings do or how to set up the server with the correct arguments.
+
+All the user has to do is forward a port and then the server app will do the rest!
 
 ## To-do:
 1. Get it running the jar and showing the output. This is the current goal.
