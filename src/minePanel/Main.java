@@ -1,7 +1,7 @@
 package minePanel;
 
 public class Main {
-	//static Panel mainGUI = new Panel();
+	static Panel mainGUI = new Panel();
 	static FileManager fm = new FileManager();
 	/**
 	 * This is my personal JRE location. Should NEVER be used in production.
@@ -10,11 +10,9 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// Enable the GUI (a bit necessary)
-		//mainGUI.setEnabled(true);
-		//mainGUI.setVisible(true);
-		
-		// Doing this in tests with a server jar named "server.jar" worked. No input to console yet, but that's next on the list.
-		ServerRunner runner = new ServerRunner("server.jar", 3096, MY_JAVA_LOC, true, null);
-		runner.startServer();
+		mainGUI.setEnabled(true);
+		mainGUI.setVisible(true);
+
+		/* Moved the serverrunner i had here to the frame, makes it easier to work with */
 	}
 }
