@@ -12,7 +12,7 @@ All the user has to do is forward a port and then the server app will do the res
 ## For those who want to help:
 First of all, I'm using [Eclipse Luna](http://www.eclipse.org) and [Java 8](https://www.java.com/en/).
 So what can you do to help?
-- First and foremost, I need help with the GUI. I'm a coder, not a designer. Just tell me what I can do to make it nice. I'm using WindowBuilder for Eclipse, cuz frankly, I'm too lazy to hand code every little GUI I ever make. **NOTE: If you download the Eclipse project and it gives you a massive number of errors, try [this](http://wiki.eclipse.org/JFace#Create_the_Eclipse_SWT.2FJFace_Project).**
+- First and foremost, I need help with the GUI. I'm a coder, not a designer. Just tell me what I can do to make it nice. I'm using WindowBuilder for Eclipse, cuz frankly, I'm too lazy to hand code every little GUI I ever make. **NOTE: If you download the Eclipse project and it gives you a massive number of errors, try [this](http://wiki.eclipse.org/JFace#Create_the_Eclipse_SWT.2FJFace_Project). Also, when downloading, click "more..." and make sure you get the appropriate `x86_64` version.**
 - Second, I am only working on making it *work*. Later, I'll get my code nicely tidied up. If you're an OCD kinda person who hates how my code it laid out, you can fix it. Just don't make any crazy changes, because I still need to be able to use it :P
 - Finally, for you experienced coders out there, you should help me make things work better or more efficiently. As I said, I'm first trying to just get it working nicely. If I need a `try/catch` somewhere, add it. If I don't, remove it.
 
