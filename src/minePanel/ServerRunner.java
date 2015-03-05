@@ -54,12 +54,12 @@ public class ServerRunner {
 	public void startServer() {
 		// Run the server based on the arguments supplied to the instance of the class
 		try {
+			strtb.setEnabled(false);
+			stpb.setEnabled(true);
+			
 			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("Xms"+usedRAM+"M"), "nogui", force64?"d64":"");
 			pb.redirectErrorStream(true);
 			p = pb.start();
-			
-			strtb.setEnabled(false);
-			stpb.setEnabled(true);
 			
 			InputStream in = p.getInputStream();
 			InputStreamReader isr = new InputStreamReader(in);
@@ -77,6 +77,8 @@ public class ServerRunner {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			strtb.setEnabled(true);
+			stpb.setEnabled(false);
 		}
 		
 	}

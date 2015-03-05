@@ -18,9 +18,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.border.BevelBorder;
 import javax.swing.JTextField;
 import java.awt.Color;
@@ -37,7 +34,7 @@ public class Panel extends JFrame {
 	
 	public Panel() {
 		setTitle("MinePanel");
-		setSize(750, 484); // For whatever reason this wasn't added automagically
+		setSize(750, 471); // For whatever reason this wasn't added automagically
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -46,50 +43,50 @@ public class Panel extends JFrame {
 		menuBar.add(fileMenu);
 		
 		JMenuItem quitButton = new JMenuItem("Quit");
-		quitButton.addMouseListener(new MouseAdapter() {
+		quitButton.addActionListener(new ActionListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
 		fileMenu.add(quitButton);
 		
-		JButton startButton = new JButton("Run Server");
-		startButton.addMouseListener(new MouseAdapter() {
+		startButton = new JButton("Run Server");
+		startButton.addActionListener(new ActionListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				/// Run the server - this is where to set all the arguments when running it.
 				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, console, startButton, stopButton);
 				runner.startServer();
 			}
 		});
-		startButton.setBounds(10, 11, 89, 23);
+		startButton.setBounds(10, 11, 122, 23);
 		getContentPane().setLayout(null);
 		getContentPane().add(startButton);
 		
-		JTextArea console = new JTextArea();
+		console = new JTextArea();
 		console.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		console.setBounds(109, 0, 625, 370);
+		console.setBounds(142, 0, 592, 370);
 		console.setLineWrap(true);
 		console.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		console.setEditable(false);
 		getContentPane().add(console);
 		
-		JButton stopButton = new JButton("Stop Server");
-		stopButton.addMouseListener(new MouseAdapter() {
+		stopButton = new JButton("Stop Server");
+		stopButton.addActionListener(new ActionListener() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				runner.stopServer();
 			}
 		});
 		stopButton.setForeground(Color.RED);
 		stopButton.setEnabled(false);
-		stopButton.setBounds(10, 45, 89, 23);
+		stopButton.setBounds(10, 45, 122, 23);
 		getContentPane().add(stopButton);
 		
 		consoleInputBox = new JTextField();
 		consoleInputBox.setFont(new Font("Monospaced", consoleInputBox.getFont().getStyle(), 13));
-		consoleInputBox.setBounds(109, 381, 625, 20);
+		consoleInputBox.setBounds(142, 381, 592, 20);
 		getContentPane().add(consoleInputBox);
 		consoleInputBox.setColumns(10);
 	}

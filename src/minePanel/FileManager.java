@@ -7,6 +7,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+/**
+ * Includes various methods and such for working with file IO (specific to this project)
+ * 
+ * @author Will Eccles
+ */
 public class FileManager {
 	
 	final static String PROPS = "server.txt"; // Properties file constant
