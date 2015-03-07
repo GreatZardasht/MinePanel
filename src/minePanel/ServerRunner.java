@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Button;
+
 import java.io.OutputStream;
 
 // A lot of this class is thanks to the answer here: http://stackoverflow.com/questions/27684050/execute-jar-and-read-the-console-output-using-inputstream-java
@@ -16,18 +19,14 @@ import java.io.OutputStream;
 /**
  * @author Will Eccles
  */
-/**
- * @author will
- *
- */
 public class ServerRunner {
 	private String jarName;
 	private int usedRAM;
 	private String javaLocation;
 	private boolean force64;
-	private JTextArea jtp;
-	private JButton stpb;
-	private JButton strtb;
+	public StyledText consoleBox;
+	private Button stpb;
+	private Button strtb;
 	
 	private ProcessBuilder pb;
 	private Process p;
@@ -38,12 +37,12 @@ public class ServerRunner {
 	 * @param javaLoc Location of java.
 	 * @param force64bit Whether or not to force 64-bit running of the server.
 	 */
-	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, JTextArea pane, JButton startButton, JButton stopButton) {
+	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, StyledText outputBox, Button startButton, Button stopButton) {
 		jarName = serverJarName;
 		usedRAM = RAM;
 		javaLocation = javaLoc;
 		force64 = force64bit;
-		jtp = pane;
+		consoleBox = outputBox;
 		stpb = stopButton;
 		strtb = startButton;
 	}
@@ -68,8 +67,8 @@ public class ServerRunner {
 			String line;
 			
 			while ((line = br.readLine()) != null) {
-				if (jtp != null) {
-					jtp.append(line);
+				if (consoleBox != null) {
+					consoleBox.append(line);
 				}
 				else {
 					System.out.println(line);
