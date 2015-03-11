@@ -13,9 +13,7 @@ import org.eclipse.swt.widgets.Button;
 
 import java.io.OutputStream;
 
-// A lot of this class is thanks to the answer here: http://stackoverflow.com/questions/27684050/execute-jar-and-read-the-console-output-using-inputstream-java
-
-// EDIT: Basically completely renovating this whole class.
+// EDIT: Basically completely renovated this whole class.
 
 /**
  * @author Will Eccles
@@ -31,7 +29,7 @@ public class ServerRunner {
 	private Button quitButton;
 	
 	private ProcessBuilder pb;
-	private Process p;
+	private Process proc;
 	
 	/**
 	 * Class resposible for running the server jar file.
@@ -66,9 +64,42 @@ public class ServerRunner {
 			runButton.setEnabled(false);
 			quitButton.setEnabled(true);
 			
-			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"");
+			String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":""};
+			
+			proc = Runtime.getRuntime().exec(jarArgs);
+			
+			InputStream in = proc.getInputStream();
+			InputStream err = proc.getErrorStream();
+			InputStreamReader inread = new InputStreamReader(in, "UTF-8");
+			InputStreamReader errread = new InputStreamReader(err, "UTF-8");
+			BufferedReader brin = new BufferedReader(inread); // Input reader
+			BufferedReader brerr = new BufferedReader(errread); // Error reader
+			
+			String line;
+			
+			// TODO: Implement error stream into this as well, that way we see everything we need to.
+			
+			while ((line = brin.readLine()) != null) {
+				if (consoleBox != null) {
+					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
+					else consoleBox.append(System.lineSeparator() + line);
+				}
+				else {
+					System.out.println(line);
+				}
+			}
+			
+			try {
+				proc.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			proc.destroy();
+			
+			/* Old method, keeping in case this new one doesn't work
+			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"");
 			pb.redirectErrorStream(true);
-			p = pb.start();
+			Process p = pb.start();
 			
 			consoleBox.setText("");
 			
@@ -86,7 +117,7 @@ public class ServerRunner {
 				else {
 					System.out.println(line);
 				}
-			}
+			}*/
 		} catch (IOException e) {
 			System.out.println(e.toString());
 			runButton.setEnabled(true);
@@ -102,11 +133,11 @@ public class ServerRunner {
 	 */
 	public void input(String input) {
 		try {
-			OutputStream os = p.getOutputStream();
+			OutputStream os = proc.getOutputStream();
 			os.write(input.getBytes());
 			if (input == "stop") {
-				p.waitFor();
-				p.destroy();
+				proc.waitFor();
+				proc.destroy();
 				runButton.setEnabled(true);
 				quitButton.setEnabled(false);
 			}
@@ -122,8 +153,8 @@ public class ServerRunner {
 	public void stopServer() {
 		try {
 			input ("stop");
-			p.waitFor();
-			p.destroy();
+			proc.waitFor();
+			proc.destroy();
 			runButton.setEnabled(true);
 			quitButton.setEnabled(false);
 		} catch (Exception e) {
@@ -131,3 +162,13 @@ public class ServerRunner {
 		}
 	}
 }
+/*
+class runThread implements Runnable {
+	
+	@Override
+	public void run() {
+		
+		
+	}
+
+}*/
