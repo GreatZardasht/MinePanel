@@ -10,6 +10,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class SWTPanel {
 
@@ -68,10 +70,13 @@ public class SWTPanel {
 		entryBox.setBounds(156, 362, 608, 21);
 		
 		startButton = new Button(shlMinepanel, SWT.NONE);
-		startButton.addSelectionListener(new SelectionAdapter() {
+		startButton.addMouseListener(new MouseAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, consoleBox, startButton, stopButton);
+			public void mouseUp(MouseEvent e) {
+				// Confirmed: gets to this point, handles click.
+				// TODO: Find out why it won't actually run the server, yet returns no errors.
+				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, startButton, stopButton);
+				runner.startServer();
 			}
 		});
 		startButton.setBounds(10, 10, 140, 25);

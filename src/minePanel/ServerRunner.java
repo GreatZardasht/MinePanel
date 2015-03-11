@@ -1,6 +1,7 @@
 package minePanel;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -25,26 +26,34 @@ public class ServerRunner {
 	private String javaLocation;
 	private boolean force64;
 	public StyledText consoleBox;
-	private Button stpb;
-	private Button strtb;
+	private boolean nogui;
+	private Button runButton;
+	private Button quitButton;
 	
 	private ProcessBuilder pb;
 	private Process p;
 	
 	/**
+	 * Class resposible for running the server jar file.
+	 * 
 	 * @param jarName The name of the server jar.
 	 * @param RAM The amount of RAM in MB to use.
 	 * @param javaLoc Location of java.
 	 * @param force64bit Whether or not to force 64-bit running of the server.
+	 * @param useNogui Use nogui mode or not? (USE ONLY IN TESTING, END USE SHOULD NOT SEE GUI)
+	 * @param outputBox Text box to send the output of the server console to.
+	 * @param startButton Button used to start the server. Messy, but should work in theory.
+	 * @param stopButton Button used to stop the server. Again, a bit sloppy.
 	 */
-	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, StyledText outputBox, Button startButton, Button stopButton) {
+	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Button startButton, Button stopButton) {
 		jarName = serverJarName;
 		usedRAM = RAM;
 		javaLocation = javaLoc;
 		force64 = force64bit;
 		consoleBox = outputBox;
-		stpb = stopButton;
-		strtb = startButton;
+		nogui = useNogui;
+		quitButton = stopButton;
+		runButton = startButton;
 	}
 	
 	/**
@@ -53,12 +62,15 @@ public class ServerRunner {
 	public void startServer() {
 		// Run the server based on the arguments supplied to the instance of the class
 		try {
-			strtb.setEnabled(false);
-			stpb.setEnabled(true);
 			
-			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("Xms"+usedRAM+"M"), "nogui", force64?"d64":"");
+			runButton.setEnabled(false);
+			quitButton.setEnabled(true);
+			
+			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"");
 			pb.redirectErrorStream(true);
 			p = pb.start();
+			
+			consoleBox.setText("");
 			
 			InputStream in = p.getInputStream();
 			InputStreamReader isr = new InputStreamReader(in);
@@ -68,16 +80,17 @@ public class ServerRunner {
 			
 			while ((line = br.readLine()) != null) {
 				if (consoleBox != null) {
-					consoleBox.append(line);
+					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
+					else consoleBox.append(System.lineSeparator() + line);
 				}
 				else {
 					System.out.println(line);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			strtb.setEnabled(true);
-			stpb.setEnabled(false);
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			runButton.setEnabled(true);
+			quitButton.setEnabled(false);
 		}
 		
 	}
@@ -94,8 +107,8 @@ public class ServerRunner {
 			if (input == "stop") {
 				p.waitFor();
 				p.destroy();
-				stpb.setEnabled(false);
-				strtb.setEnabled(true);
+				runButton.setEnabled(true);
+				quitButton.setEnabled(false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,8 +124,8 @@ public class ServerRunner {
 			input ("stop");
 			p.waitFor();
 			p.destroy();
-			stpb.setEnabled(false);
-			strtb.setEnabled(true);
+			runButton.setEnabled(true);
+			quitButton.setEnabled(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
