@@ -1,6 +1,7 @@
 package minePanel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,8 +11,11 @@ import javax.swing.JTextArea;
 
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
 
 import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // EDIT: Basically completely renovated this whole class.
 
@@ -23,7 +27,7 @@ public class ServerRunner {
 	private int usedRAM;
 	private String javaLocation;
 	private boolean force64;
-	public StyledText consoleBox;
+	public static StyledText consoleBox;
 	private boolean nogui;
 	private Button runButton;
 	private Button quitButton;
@@ -58,13 +62,27 @@ public class ServerRunner {
 	 * Run the server. Enables and disables start and stop buttons.
 	 */
 	public void startServer() {
+		
+		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":""};
+		
+		ProcessBuilder pb = new ProcessBuilder(jarArgs);
+        try {
+            Process p = pb.start();
+            LogStreamReader lsr = new LogStreamReader(p.getInputStream());
+            Thread thread = new Thread(lsr, "LogStreamReader");
+            thread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		
+		/*
 		// Run the server based on the arguments supplied to the instance of the class
 		try {
 			
 			runButton.setEnabled(false);
 			quitButton.setEnabled(true);
 			
-			String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":""};
+			
 			
 			proc = Runtime.getRuntime().exec(jarArgs);
 			
@@ -96,34 +114,30 @@ public class ServerRunner {
 			}
 			proc.destroy();
 			
-			/* Old method, keeping in case this new one doesn't work
-			pb = new ProcessBuilder(javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"");
-			pb.redirectErrorStream(true);
-			Process p = pb.start();
-			
-			consoleBox.setText("");
-			
-			InputStream in = p.getInputStream();
-			InputStreamReader isr = new InputStreamReader(in);
-			BufferedReader br = new BufferedReader(isr);
-			
-			String line;
-			
-			while ((line = br.readLine()) != null) {
-				if (consoleBox != null) {
-					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
-					else consoleBox.append(System.lineSeparator() + line);
-				}
-				else {
-					System.out.println(line);
-				}
-			}*/
 		} catch (IOException e) {
 			System.out.println(e.toString());
 			runButton.setEnabled(true);
 			quitButton.setEnabled(false);
-		}
+		}*/
 		
+	}
+	
+	/**
+	 * This method will allow printing to the console from another thread
+	 * @param display Display containing the console box
+	 * @param cBox Console box
+	 * @param line Line to print to the console box
+	 */
+	private static void consolePrint(final Display display, final StyledText cBox, final String line) {
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!cBox.isDisposed()) {
+					if (cBox.getText() == null || cBox.getText() == "") cBox.append(line);
+					else cBox.append(System.lineSeparator() + line);
+				}
+			}
+		});
 	}
 	
 	/**
@@ -131,7 +145,7 @@ public class ServerRunner {
 	 * 
 	 * @param input String to input to the server. If it's "stop," will disable stop button and enable start.
 	 */
-	public void input(String input) {
+		/*public void input(String input) {
 		try {
 			OutputStream os = proc.getOutputStream();
 			os.write(input.getBytes());
@@ -145,11 +159,12 @@ public class ServerRunner {
 			e.printStackTrace();
 		}
 	}
-	
+	*/
 	
 	/**
 	 * Stop the server. Will wait for server to finish shutting down then destroy process. Also, enables/disables start/stop buttons respectively.
 	 */
+	/*
 	public void stopServer() {
 		try {
 			input ("stop");
@@ -160,15 +175,27 @@ public class ServerRunner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}*/
+	
+	class LogStreamReader implements Runnable {
+		private BufferedReader reader;
+		public LogStreamReader(InputStream is) {
+			this.reader = new BufferedReader(new InputStreamReader(is));
+		}
+		
+		public void run() {
+			try {
+				String line = reader.readLine();
+				while (line != null) {
+					consolePrint(Display.getDefault(), consoleBox, line);
+					line = reader.readLine();
+				}
+				reader.close();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
-/*
-class runThread implements Runnable {
-	
-	@Override
-	public void run() {
-		
-		
-	}
 
-}*/
+
