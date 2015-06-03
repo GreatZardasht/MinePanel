@@ -12,13 +12,15 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 
 public class SWTPanel {
 
 	ServerRunner runner;
 	
 	Shell shlMinepanel;
-	private Text entryBox;
+	public Text entryBox;
 	public StyledText consoleBox;
 	public Button startButton;
 	public Button stopButton;
@@ -73,9 +75,7 @@ public class SWTPanel {
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				// Confirmed: gets to this point, handles click.
-				// TODO: Find out why it won't actually run the server, yet returns no errors.
-				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, startButton, stopButton);
+				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton);
 				runner.startServer();
 			}
 		});
@@ -83,11 +83,6 @@ public class SWTPanel {
 		startButton.setText("Start Server");
 		
 		stopButton = new Button(shlMinepanel, SWT.NONE);
-		stopButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
 		stopButton.setBounds(10, 41, 140, 25);
 		stopButton.setText("Stop Server");
 

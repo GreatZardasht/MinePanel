@@ -1,17 +1,26 @@
 package minePanel;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
@@ -28,12 +37,10 @@ public class ServerRunner {
 	private String javaLocation;
 	private boolean force64;
 	public static StyledText consoleBox;
+	private static Text commandLine;
 	private boolean nogui;
 	private Button runButton;
 	private Button quitButton;
-	
-	private ProcessBuilder pb;
-	private Process proc;
 	
 	/**
 	 * Class resposible for running the server jar file.
@@ -44,14 +51,16 @@ public class ServerRunner {
 	 * @param force64bit Whether or not to force 64-bit running of the server.
 	 * @param useNogui Use nogui mode or not? (USE ONLY IN TESTING, END USE SHOULD NOT SEE GUI)
 	 * @param outputBox Text box to send the output of the server console to.
+	 * @param entryBox The text box to use as the command line
 	 * @param startButton Button used to start the server. Messy, but should work in theory.
 	 * @param stopButton Button used to stop the server. Again, a bit sloppy.
 	 */
-	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Button startButton, Button stopButton) {
+	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Text entryBox, Button startButton, Button stopButton) {
 		jarName = serverJarName;
 		usedRAM = RAM;
 		javaLocation = javaLoc;
 		force64 = force64bit;
+		commandLine = entryBox;
 		consoleBox = outputBox;
 		nogui = useNogui;
 		quitButton = stopButton;
@@ -68,58 +77,55 @@ public class ServerRunner {
 		ProcessBuilder pb = new ProcessBuilder(jarArgs);
         try {
             Process p = pb.start();
-            LogStreamReader lsr = new LogStreamReader(p.getInputStream());
-            Thread thread = new Thread(lsr, "LogStreamReader");
-            thread.start();
-        } catch (Exception e) {
+            ServerConsoleReader scr = new ServerConsoleReader(p.getInputStream(), p.getOutputStream());
+            Thread readerThread = new Thread(scr, "ServerConsoleReader");
+            readerThread.start();
+            
+            runButton.setEnabled(false);
+            quitButton.setEnabled(true);
+            
+            // listener for enter key press on console entry box
+            Display.getDefault().asyncExec(new Runnable() {
+            	@Override
+            	public void run() {
+            		if (!commandLine.isDisposed()) {
+            			commandLine.addKeyListener(new KeyAdapter() {
+                			@Override
+                			public void keyPressed(KeyEvent e) {
+                				// if it's the enter key
+                				if (e.keyCode == org.eclipse.swt.SWT.CR) {
+                					// if there was a command in the text box
+                					if (!commandLine.getText().equals("")) {
+                						// SHOULD run the command
+                						
+                						commandLine.setText("");
+                					}
+                					// no else because that would be useless here lol
+                				}
+                			}
+                		});
+            		}
+            	}
+            });
+            
+            // listener for stop button
+            Display.getDefault().asyncExec(new Runnable() {
+            	public void run() {
+            		if (!quitButton.isDisposed()) {
+            			quitButton.addMouseListener(new MouseAdapter() {
+            				@Override
+                			public void mouseUp(MouseEvent e) {
+                				
+                			}
+                		});
+                	}
+            	}
+            });
+        } catch (IOException e) {
             e.printStackTrace();
         }
 		
-		/*
-		// Run the server based on the arguments supplied to the instance of the class
-		try {
-			
-			runButton.setEnabled(false);
-			quitButton.setEnabled(true);
-			
-			
-			
-			proc = Runtime.getRuntime().exec(jarArgs);
-			
-			InputStream in = proc.getInputStream();
-			InputStream err = proc.getErrorStream();
-			InputStreamReader inread = new InputStreamReader(in, "UTF-8");
-			InputStreamReader errread = new InputStreamReader(err, "UTF-8");
-			BufferedReader brin = new BufferedReader(inread); // Input reader
-			BufferedReader brerr = new BufferedReader(errread); // Error reader
-			
-			String line;
-			
-			// TODO: Implement error stream into this as well, that way we see everything we need to.
-			
-			while ((line = brin.readLine()) != null) {
-				if (consoleBox != null) {
-					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
-					else consoleBox.append(System.lineSeparator() + line);
-				}
-				else {
-					System.out.println(line);
-				}
-			}
-			
-			try {
-				proc.waitFor();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			proc.destroy();
-			
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			runButton.setEnabled(true);
-			quitButton.setEnabled(false);
-		}*/
-		
+        
 	}
 	
 	/**
@@ -128,7 +134,7 @@ public class ServerRunner {
 	 * @param cBox Console box
 	 * @param line Line to print to the console box
 	 */
-	private static void consolePrint(final Display display, final StyledText cBox, final String line) {
+	public static void consolePrint(final Display display, final StyledText cBox, final String line) {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -177,10 +183,12 @@ public class ServerRunner {
 		}
 	}*/
 	
-	class LogStreamReader implements Runnable {
+	class ServerConsoleReader implements Runnable {
 		private BufferedReader reader;
-		public LogStreamReader(InputStream is) {
+		private BufferedWriter writer;
+		public ServerConsoleReader(InputStream is, OutputStream os) {
 			this.reader = new BufferedReader(new InputStreamReader(is));
+			this.writer = new BufferedWriter(new OutputStreamWriter(os));
 		}
 		
 		public void run() {
@@ -191,8 +199,35 @@ public class ServerRunner {
 					line = reader.readLine();
 				}
 				reader.close();
-			} catch(Exception e) {
+			} catch(IOException e) {
 				e.printStackTrace();
+			}
+		}
+		
+		public void command(String com) {
+			try {
+				writer.write(com);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class ServerConsoleWriter implements Runnable {
+		private BufferedWriter writer;
+		public ServerConsoleWriter(OutputStream s) {
+			this.writer = new BufferedWriter(new OutputStreamWriter(s));
+		}
+		
+		public void run() {
+			while (true) {
+				if (!commandLine.isDisposed()) {
+					try {
+						writer.write(commandLine.getText());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
