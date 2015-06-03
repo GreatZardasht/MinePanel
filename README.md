@@ -5,7 +5,7 @@ This is not meant for large server owners (i.e. companies with rentable servers)
 All the user has to do is forward a port and then the server app will do the rest!
 
 ## To-do:
-1. Get it running the jar and showing the output. This is the current goal.
+1. ~~Get it running the jar and showing the output. This is the current goal.~~
 2. Make sure file IO exceptions are all handled nicely. Don't want the program crashing because the user messed with it, now do we?
 3. Make it look nicer. I'm using SWT (with WindowBuilder) to make the GUI. While it does use native designs, images, etc., I'm not a GUI designer. I'm a programmer. Any help with the locations of buttons would be much appreciated.
 
