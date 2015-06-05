@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -18,8 +20,13 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import java.io.OutputStream;
@@ -41,6 +48,8 @@ public class ServerRunner {
 	private boolean nogui;
 	private Button runButton;
 	private Button quitButton;
+	private Button clrButton;
+	private Shell MPShell = Main.panel.shlMinepanel; // the shell, I add a handler later
 	
 	/**
 	 * Class resposible for running the server jar file.
@@ -54,8 +63,10 @@ public class ServerRunner {
 	 * @param entryBox The text box to use as the command line
 	 * @param startButton Button used to start the server. Messy, but should work in theory.
 	 * @param stopButton Button used to stop the server. Again, a bit sloppy.
+	 * @param clearButton Button used to clear the console.
+	 * @param shell The SWT shell holding the app.
 	 */
-	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Text entryBox, Button startButton, Button stopButton) {
+	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Text entryBox, Button startButton, Button stopButton, Button clearButton, Shell shell) {
 		jarName = serverJarName;
 		usedRAM = RAM;
 		javaLocation = javaLoc;
@@ -65,6 +76,8 @@ public class ServerRunner {
 		nogui = useNogui;
 		quitButton = stopButton;
 		runButton = startButton;
+		clrButton = clearButton;
+		MPShell = shell;
 	}
 	
 	/**
@@ -78,11 +91,16 @@ public class ServerRunner {
         try {
             Process p = pb.start();
             ServerConsoleReader scr = new ServerConsoleReader(p.getInputStream(), p.getOutputStream());
+            
+            // serverconsolereader's thread
             Thread readerThread = new Thread(scr, "ServerConsoleReader");
             readerThread.start();
             
+            // set button states
             runButton.setEnabled(false);
             quitButton.setEnabled(true);
+            
+            
             
             // listener for enter key press on console entry box
             Display.getDefault().asyncExec(new Runnable() {
@@ -97,7 +115,7 @@ public class ServerRunner {
                 					// if there was a command in the text box
                 					if (!commandLine.getText().equals("")) {
                 						// SHOULD run the command
-                						
+                						scr.command(commandLine.getText());
                 						commandLine.setText("");
                 					}
                 					// no else because that would be useless here lol
@@ -115,10 +133,29 @@ public class ServerRunner {
             			quitButton.addMouseListener(new MouseAdapter() {
             				@Override
                 			public void mouseUp(MouseEvent e) {
-                				
+                				// first run the stop command
+            					consolePrint("Stopping server [Stop button]");
+            					scr.command("stop");
+            					
+            					runButton.setEnabled(true);
+            		            quitButton.setEnabled(false);
                 			}
                 		});
                 	}
+            	}
+            });
+            
+            // this is our listener for when the shell closes
+            Display.getDefault().asyncExec(new Runnable() {
+            	public void run() {
+            		MPShell.addListener(SWT.Close, new Listener() {
+            			@Override
+            			public void handleEvent(Event e) {
+            				// this is to be done when the shell's close button is clicked.
+            				// if the server is still running, it will send the stop command.
+            				// this ensures that the user doesn't close it and end up not saving things.
+            			}
+            		});
             	}
             });
         } catch (IOException e) {
@@ -134,68 +171,33 @@ public class ServerRunner {
 	 * @param cBox Console box
 	 * @param line Line to print to the console box
 	 */
-	public static void consolePrint(final Display display, final StyledText cBox, final String line) {
-		display.asyncExec(new Runnable() {
+	public static void consolePrint(final String line) {
+		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				if (!cBox.isDisposed()) {
-					if (cBox.getText() == null || cBox.getText() == "") cBox.append(line);
-					else cBox.append(System.lineSeparator() + line);
+				if (!consoleBox.isDisposed()) {
+					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
+					else consoleBox.append(System.lineSeparator() + line);
 				}
 			}
 		});
 	}
 	
-	/**
-	 * Input commands to the server.
-	 * 
-	 * @param input String to input to the server. If it's "stop," will disable stop button and enable start.
-	 */
-		/*public void input(String input) {
-		try {
-			OutputStream os = proc.getOutputStream();
-			os.write(input.getBytes());
-			if (input == "stop") {
-				proc.waitFor();
-				proc.destroy();
-				runButton.setEnabled(true);
-				quitButton.setEnabled(false);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	*/
-	
-	/**
-	 * Stop the server. Will wait for server to finish shutting down then destroy process. Also, enables/disables start/stop buttons respectively.
-	 */
-	/*
-	public void stopServer() {
-		try {
-			input ("stop");
-			proc.waitFor();
-			proc.destroy();
-			runButton.setEnabled(true);
-			quitButton.setEnabled(false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}*/
-	
 	class ServerConsoleReader implements Runnable {
 		private BufferedReader reader;
-		private BufferedWriter writer;
+		private OutputStream os;
+		private PrintWriter w;
 		public ServerConsoleReader(InputStream is, OutputStream os) {
 			this.reader = new BufferedReader(new InputStreamReader(is));
-			this.writer = new BufferedWriter(new OutputStreamWriter(os));
+			this.os = os;
+			this.w = new PrintWriter(os);
 		}
 		
 		public void run() {
 			try {
 				String line = reader.readLine();
 				while (line != null) {
-					consolePrint(Display.getDefault(), consoleBox, line);
+					consolePrint(line);
 					line = reader.readLine();
 				}
 				reader.close();
@@ -204,15 +206,23 @@ public class ServerRunner {
 			}
 		}
 		
-		public void command(String com) {
+		public void command(final String com) {
 			try {
-				writer.write(com);
-			} catch (IOException e) {
+				
+				// this writes the command to the server
+				// it uses the \n to simulate the user inputting the text manually :)
+				w.write(com);
+				w.write("\n");
+				w.flush();
+				
+			} catch (Exception e) {
+				consolePrint("Command failed for some reason, see stack trace.");
 				e.printStackTrace();
 			}
 		}
 	}
 	
+	// dis be uzelezz
 	class ServerConsoleWriter implements Runnable {
 		private BufferedWriter writer;
 		public ServerConsoleWriter(OutputStream s) {

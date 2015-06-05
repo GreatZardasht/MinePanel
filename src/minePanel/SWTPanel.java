@@ -14,16 +14,19 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 
 public class SWTPanel {
 
 	ServerRunner runner;
 	
-	Shell shlMinepanel;
+	public Shell shlMinepanel;
 	public Text entryBox;
 	public StyledText consoleBox;
 	public Button startButton;
 	public Button stopButton;
+	public Button clearButton;
 
 	/**
 	 * Launch the application.
@@ -61,6 +64,7 @@ public class SWTPanel {
 		shlMinepanel.setSize(790, 427);
 		shlMinepanel.setText("MinePanel");
 		
+		
 		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
 		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
 		consoleBox.setDoubleClickEnabled(false);
@@ -75,7 +79,7 @@ public class SWTPanel {
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton);
+				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel);
 				runner.startServer();
 			}
 		});
@@ -85,6 +89,10 @@ public class SWTPanel {
 		stopButton = new Button(shlMinepanel, SWT.NONE);
 		stopButton.setBounds(10, 41, 140, 25);
 		stopButton.setText("Stop Server");
+		
+		clearButton = new Button(shlMinepanel, SWT.NONE);
+		clearButton.setBounds(10, 72, 140, 21);
+		clearButton.setText("Clear Console");
 
 	}
 }
