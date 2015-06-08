@@ -21,3 +21,5 @@ To be honest, I have no clue. I'm not working only on this, because I have to wo
 
 ## How much will it cost?
 Well, it'll be free. However, you can always buy the DLC to allow the app to run a server :trollface:
+
+But seriously, it will be totally free. If you want to support me or you think the app is really good, you can always send me a donation through my [tip jar](https://www.coinbase.com/willeccles), courtesy of [Coinbase](https://www.coinbase.com) :)
