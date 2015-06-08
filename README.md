@@ -1,4 +1,4 @@
-# MinePanel
+# MinePanel 
 A simple GUI for running your Minecraft server. Will show output, will allow you to easily edit properties, etc.
 This is not meant for large server owners (i.e. companies with rentable servers), but more for the average Joe who doesn't know what all the settings do or how to set up the server with the correct arguments.
 
@@ -18,3 +18,6 @@ So what can you do to help?
 
 ## So when will it be done?
 To be honest, I have no clue. I'm not working only on this, because I have to worry about school as well. Just know that at some point in the future, it will be available for use :P
+
+## How much will it cost?
+Well, it'll be free. However, you can always buy the DLC to allow the app to run a server :trollface:
