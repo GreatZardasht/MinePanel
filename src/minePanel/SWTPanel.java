@@ -27,10 +27,11 @@ public class SWTPanel {
 	public Button startButton;
 	public Button stopButton;
 	public Button clearButton;
+	public Button propertiesButton;
 
 	/**
 	 * Launch the application.
-	 * @param args
+	 * @param args Same old args you always use lel
 	 */
 	public static void main(String[] args) {
 		try {
@@ -60,12 +61,14 @@ public class SWTPanel {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shlMinepanel = new Shell();
+		                       // disables the maximize button and resizing
+		shlMinepanel = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
 		shlMinepanel.setSize(790, 427);
 		shlMinepanel.setText("MinePanel");
 		
 		
 		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+		consoleBox.setWrapIndent(40);
 		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
 		consoleBox.setDoubleClickEnabled(false);
 		consoleBox.setEditable(false);
@@ -79,7 +82,7 @@ public class SWTPanel {
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel);
+				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel, propertiesButton);
 				runner.startServer();
 			}
 		});
@@ -89,10 +92,23 @@ public class SWTPanel {
 		stopButton = new Button(shlMinepanel, SWT.NONE);
 		stopButton.setBounds(10, 41, 140, 25);
 		stopButton.setText("Stop Server");
+		stopButton.setEnabled(false);
 		
 		clearButton = new Button(shlMinepanel, SWT.NONE);
 		clearButton.setBounds(10, 72, 140, 21);
 		clearButton.setText("Clear Console");
+		
+		propertiesButton = new Button(shlMinepanel, SWT.NONE);
+		propertiesButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				// open the properties panel
+				PropertiesPanel ppanel = new PropertiesPanel();
+				ppanel.open();
+			}
+		});
+		propertiesButton.setBounds(10, 136, 140, 25);
+		propertiesButton.setText("Server Properties");
 
 	}
 }

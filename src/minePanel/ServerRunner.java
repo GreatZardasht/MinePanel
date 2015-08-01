@@ -50,9 +50,12 @@ public class ServerRunner {
 	private Button quitButton;
 	private Button clrButton;
 	private Shell MPShell = Main.panel.shlMinepanel; // the shell, I add a handler later
+	private Button propsButton;
+	
 	
 	/**
 	 * Class resposible for running the server jar file.
+	 * And yes, it has the worst constructor params in the world. Don't judge me.
 	 * 
 	 * @param jarName The name of the server jar.
 	 * @param RAM The amount of RAM in MB to use.
@@ -65,8 +68,9 @@ public class ServerRunner {
 	 * @param stopButton Button used to stop the server. Again, a bit sloppy.
 	 * @param clearButton Button used to clear the console.
 	 * @param shell The SWT shell holding the app.
+	 * @param propertiesButton Button used to open the properties menu.
 	 */
-	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Text entryBox, Button startButton, Button stopButton, Button clearButton, Shell shell) {
+	public ServerRunner(String serverJarName, int RAM, String javaLoc, boolean force64bit, boolean useNogui, StyledText outputBox, Text entryBox, Button startButton, Button stopButton, Button clearButton, Shell shell, Button propertiesButton) {
 		jarName = serverJarName;
 		usedRAM = RAM;
 		javaLocation = javaLoc;
@@ -78,12 +82,17 @@ public class ServerRunner {
 		runButton = startButton;
 		clrButton = clearButton;
 		MPShell = shell;
+		propsButton = propertiesButton;
 	}
 	
 	/**
-	 * Run the server. Enables and disables start and stop buttons.
+	 * Run the server. Enables and disables the appropriate buttons as well.
 	 */
 	public void startServer() {
+		
+		// print some stuff and then clear the console before starting the server
+		consoleBox.setText("");
+		consolePrint("[Minepanel] Starting Minecraft server...");
 		
 		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":""};
 		
@@ -99,13 +108,16 @@ public class ServerRunner {
             // set button states
             runButton.setEnabled(false);
             quitButton.setEnabled(true);
+            propsButton.setEnabled(false);
             
             
             
-            // listener for enter key press on console entry box
+            // listeners being added on another thread asyncronously
             Display.getDefault().asyncExec(new Runnable() {
             	@Override
             	public void run() {
+            		
+            		// add enter key listener for command line
             		if (!commandLine.isDisposed()) {
             			commandLine.addKeyListener(new KeyAdapter() {
                 			@Override
@@ -114,8 +126,16 @@ public class ServerRunner {
                 				if (e.keyCode == org.eclipse.swt.SWT.CR) {
                 					// if there was a command in the text box
                 					if (!commandLine.getText().equals("")) {
-                						// SHOULD run the command
+                						// run the command
                 						scr.command(commandLine.getText());
+                						
+                						// if the command was the stop command we need to disable and enable some buttons
+                						if (commandLine.getText().toLowerCase().equals("stop")) {
+                							runButton.setEnabled(true);
+                							quitButton.setEnabled(false);
+                							propsButton.setEnabled(true);
+                						}
+                							
                 						commandLine.setText("");
                 					}
                 					// no else because that would be useless here lol
@@ -123,41 +143,48 @@ public class ServerRunner {
                 			}
                 		});
             		}
-            	}
-            });
-            
-            // listener for stop button
-            Display.getDefault().asyncExec(new Runnable() {
-            	public void run() {
+            		
+            		// stop button handler
             		if (!quitButton.isDisposed()) {
             			quitButton.addMouseListener(new MouseAdapter() {
             				@Override
                 			public void mouseUp(MouseEvent e) {
                 				// first run the stop command
-            					consolePrint("Stopping server [Stop button]");
+            					consolePrint("[Minepanel] Stop button pressed. Stopping server.");
             					scr.command("stop");
             					
             					runButton.setEnabled(true);
             		            quitButton.setEnabled(false);
+            		            propsButton.setEnabled(true);
                 			}
                 		});
                 	}
-            	}
-            });
-            
-            // this is our listener for when the shell closes
-            Display.getDefault().asyncExec(new Runnable() {
-            	public void run() {
+            		
+            		// when the shell is gonna close
             		MPShell.addListener(SWT.Close, new Listener() {
             			@Override
             			public void handleEvent(Event e) {
-            				// this is to be done when the shell's close button is clicked.
-            				// if the server is still running, it will send the stop command.
-            				// this ensures that the user doesn't close it and end up not saving things.
+            				if (p.isAlive()) {
+            					// in case someone closes it before shutting off the server thread, this will nicely stop the server in the background.
+            					// as the server is another thread, it will do this in the background even if the app is closed.
+            					scr.command("stop");
+            				}
             			}
             		});
+            		
+            		// clear button handler
+            		if (!clrButton.isDisposed()) {
+            			clrButton.addMouseListener(new MouseAdapter() {
+            				@Override
+            				public void mouseUp(MouseEvent e) {
+            					consoleBox.setText("");
+            				}
+            			});
+            		}
+            		
             	}
             });
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -167,8 +194,6 @@ public class ServerRunner {
 	
 	/**
 	 * This method will allow printing to the console from another thread
-	 * @param display Display containing the console box
-	 * @param cBox Console box
 	 * @param line Line to print to the console box
 	 */
 	public static void consolePrint(final String line) {
@@ -208,7 +233,6 @@ public class ServerRunner {
 		
 		public void command(final String com) {
 			try {
-				
 				// this writes the command to the server
 				// it uses the \n to simulate the user inputting the text manually :)
 				w.write(com);
@@ -218,26 +242,6 @@ public class ServerRunner {
 			} catch (Exception e) {
 				consolePrint("Command failed for some reason, see stack trace.");
 				e.printStackTrace();
-			}
-		}
-	}
-	
-	// dis be uzelezz
-	class ServerConsoleWriter implements Runnable {
-		private BufferedWriter writer;
-		public ServerConsoleWriter(OutputStream s) {
-			this.writer = new BufferedWriter(new OutputStreamWriter(s));
-		}
-		
-		public void run() {
-			while (true) {
-				if (!commandLine.isDisposed()) {
-					try {
-						writer.write(commandLine.getText());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
 			}
 		}
 	}

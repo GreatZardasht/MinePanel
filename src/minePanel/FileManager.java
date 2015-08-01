@@ -8,13 +8,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 /**
- * Includes various methods and such for working with file IO (specific to this project)
+ * Class intended to update the files in the server directory, namely server.properties among other things
  * 
  * @author Will Eccles
  */
 public class FileManager {
 	
-	final static String PROPS = "server.txt"; // Properties file constant
+	final static String PROPS = "server.properties"; // Properties file constant
 	final static String SERVER = "server.jar"; // Server file constant
 	
 	
@@ -33,27 +33,13 @@ public class FileManager {
 	
 	public static void setProp(String propertyName, String propertyValue) {
 		if (checkProps() == true) {
-			try { // Try to read and write the file, and catch error e if not possible
+			try { // Try to read and write the file
 				FileWriter fw = new FileWriter(PROPS);
 				BufferedWriter bw = new BufferedWriter(fw);
 				FileReader fr = new FileReader(PROPS);
 				BufferedReader br = new BufferedReader(fr);
 				
-				String line = null;
-				String allLines = "";
 				
-				while ((line = br.readLine()) != null) {
-					allLines += line + System.lineSeparator();
-				}
-				
-				allLines.replaceAll(propertyName+"[ ]*=[^" + System.lineSeparator() + "]*", propertyName+"="+propertyValue);
-				
-				FileOutputStream file = new FileOutputStream(PROPS);
-				file.write(allLines.getBytes());
-				
-				file.close();
-				bw.close();
-				br.close();
 			}
 			catch (Exception e) {
 				System.err.println(e);
