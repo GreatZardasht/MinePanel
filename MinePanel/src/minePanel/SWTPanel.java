@@ -73,6 +73,7 @@ public class SWTPanel {
 		consoleBox.setDoubleClickEnabled(false);
 		consoleBox.setEditable(false);
 		consoleBox.setBounds(156, 10, 608, 346);
+		consoleBox.setAlwaysShowScrollBars(true);
 		
 		entryBox = new Text(shlMinepanel, SWT.BORDER);
 		entryBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));

@@ -30,15 +30,26 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// EDIT: Basically completely renovated this whole class.
 
 /**
+ * The class in charge of running the server, making sure commands work, and so on.
  * @author Will Eccles
+ * @version idek anymore
  */
 public class ServerRunner {
+	
+	// enter key (AKA character return)
+	private final char ENTER = org.eclipse.swt.SWT.CR;
+	// up arrow
+	private final int UP = org.eclipse.swt.SWT.ARROW_UP;
+	// down arrow
+	private final int DOWN = org.eclipse.swt.SWT.ARROW_DOWN;
+	
+	
 	private String jarName;
 	private int usedRAM;
 	private String javaLocation;
@@ -52,6 +63,10 @@ public class ServerRunner {
 	private Shell MPShell = Main.panel.shlMinepanel; // the shell, I add a handler later
 	private Button propsButton;
 	
+	// This is being used instead of String[] because the ArrayList is mutable whereas the usual String[] array is not.
+	private ArrayList<String> commandHistory = new ArrayList<String>();
+	private int currentIndex = commandHistory.size();
+	private String currentCommand = "";
 	
 	/**
 	 * Class resposible for running the server jar file.
@@ -61,7 +76,7 @@ public class ServerRunner {
 	 * @param RAM The amount of RAM in MB to use.
 	 * @param javaLoc Location of java.
 	 * @param force64bit Whether or not to force 64-bit running of the server.
-	 * @param useNogui Use nogui mode or not? (USE ONLY IN TESTING, END USE SHOULD NOT SEE GUI)
+	 * @param useNogui Use nogui mode or not? (USE ONLY IN TESTING, END USER SHOULD NOT SEE GUI)
 	 * @param outputBox Text box to send the output of the server console to.
 	 * @param entryBox The text box to use as the command line
 	 * @param startButton Button used to start the server. Messy, but should work in theory.
@@ -123,14 +138,21 @@ public class ServerRunner {
                 			@Override
                 			public void keyPressed(KeyEvent e) {
                 				// if it's the enter key
-                				if (e.keyCode == org.eclipse.swt.SWT.CR) {
+                				if (e.keyCode == ENTER) {
+                					String com = commandLine.getText().trim();
+                					
                 					// if there was a command in the text box
-                					if (!commandLine.getText().equals("")) {
+                					if (!com.equals("")) {
                 						// run the command
-                						scr.command(commandLine.getText());
+                						scr.command(com);
+                						
+                						commandHistory.add(com);
+                						
+                						// reset position in command history if you press enter
+                						currentIndex = commandHistory.size();
                 						
                 						// if the command was the stop command we need to disable and enable some buttons
-                						if (commandLine.getText().toLowerCase().equals("stop")) {
+                						if (com.toLowerCase().equals("stop")) {
                 							runButton.setEnabled(true);
                 							quitButton.setEnabled(false);
                 							propsButton.setEnabled(true);
@@ -139,6 +161,48 @@ public class ServerRunner {
                 						commandLine.setText("");
                 					}
                 					// no else because that would be useless here lol
+                				}
+                			}
+                		});
+            			
+            			commandLine.addKeyListener(new KeyAdapter() {
+                			@Override
+                			public void keyPressed(KeyEvent e) {
+                				// if it's an arrow key
+                				if (e.keyCode == UP || e.keyCode == DOWN) {
+                					String com = commandLine.getText().trim();
+                					
+                					if (!com.equals("")) {
+                						// if the command entered isn't nothing, then store it
+                						currentCommand = com;
+                					}
+                					else {
+                						currentCommand = "";
+                					}
+                					
+                					// now based on which arrow key was pressed, either go up in history or down
+                					switch(e.keyCode) {
+                					case UP:
+                						if (commandHistory.size() > 0 && currentIndex > 0) {
+                							currentIndex --;
+                							commandLine.setText(commandHistory.get(currentIndex));
+                						}
+                						break;
+                					case DOWN:
+                						if (commandHistory.size() > 0 && currentIndex < commandHistory.size() - 1) {
+                							currentIndex ++;
+                							commandLine.setText(commandHistory.get(currentIndex));
+                						}
+                						if (currentIndex == commandHistory.size() - 1) {
+                							if (!currentCommand.equals("")) {
+                								commandLine.setText(currentCommand);
+                							}
+                							else {
+                								commandLine.setText("");
+                							}
+                						}
+                						break;
+                					}
                 				}
                 			}
                 		});

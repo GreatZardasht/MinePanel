@@ -17,7 +17,6 @@ public class FileManager {
 	final static String PROPS = "server.properties"; // Properties file constant
 	final static String SERVER = "server.jar"; // Server file constant
 	
-	
 	/** Check if "server.jar" is in folder. */
 	public static boolean checkJar() {
 		boolean check = new File(SERVER).exists();

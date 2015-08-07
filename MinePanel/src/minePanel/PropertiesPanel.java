@@ -1,11 +1,18 @@
 package minePanel;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.SWT;
@@ -26,17 +33,92 @@ public class PropertiesPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	
+	// This is a hash of properties to be used when setting values of text boxes, etc.
+	// to add to it: propsHash.put("key", "value");
+	// to get: propsHash.get("hey"); -> "value"
+	Map<String, String> propsHash = new HashMap<String, String>();
+	
 	public Shell shlProperties;
 	private Text motdBox;
 	
 	public void open() {
-		// first, load all of the properties into an array.
-		try {
-			FileReader fr = new FileReader("server.properties");
+		/*// test if it can open (if there's a properties file or not)
+		if (!new File("server.properties").exists()) {
+			//MessageBox messageBox = new MessageBox(shlProperties, SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 			
-		} catch (IOException e) {
+			//messageBox.setText("Error");
+			//messageBox.setMessage("No server.properties file was found. Run the server to correct this issue, then come back after stopping the server.");
+			return;
+		}
+		*/
+		
+		// first, load all of the properties into a hashmap
+		
+		// string in which to store all of the lines of the properties file
+		String forArray = "";
+		try {
+			Scanner s = new Scanner(new BufferedReader(new FileReader("server.properties")));
+			
+			while (s.hasNext()) {
+				System.out.println(s.nextLine());
+				
+				// this will cut out the comments at the top of the file
+				if (!s.nextLine().startsWith("#")) forArray += s.nextLine() + "`";
+			}
+			
+			s.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		String[] properties = forArray.split("`");
+		
+		System.out.println("\n Starting properties array");
+		
+		for (String prop : properties) {
+			
+			System.out.println(prop);
+			
+			String[] p = prop.split("=");
+			
+			// this will determine which property it is looking at
+			switch(p[0]) {
+			case "server-port":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "allow-nether":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "gamemode":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "difficulty":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "spawn-monsters":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "announce-player-achievements":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "pvp":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "enable-command-block":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "spawn-animals":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "white-list":
+				propsHash.put(p[0], p[1]);
+				break;
+			case "motd":
+				propsHash.put(p[0], p[1]);
+				break;
+			}
+		}
+		
 		Display display = Display.getDefault();
 		createContents();
 		shlProperties.open();
@@ -113,5 +195,26 @@ public class PropertiesPanel {
 		btnCMDBlocks.setBounds(10, 175, 157, 16);
 		btnCMDBlocks.setText("Enable command blocks");
 		
+	}
+}
+
+/**
+ * basically a simple way to store the properties that I need
+ * while this is no longer used, I keep it just in case. most likely removed in another update later on.
+ * @author will
+ *
+ */
+class Property {
+	public String value;
+	public String name;
+	
+	/**
+	 * Constructor for the Property class
+	 * @param _name property name
+	 * @param _value property value
+	 */
+	public Property(String _name, String _value) {
+		this.name = _name;
+		this.value = _value;
 	}
 }
