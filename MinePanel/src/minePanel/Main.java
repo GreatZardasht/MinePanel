@@ -1,7 +1,7 @@
 package minePanel;
 
 public class Main {
-	public static SWTPanel panel = new SWTPanel();
+	public static ServerPanel panel = new ServerPanel();
 	static FileManager fm = new FileManager();
 
 	// This is my personal JRE location. Should NEVER be used in production.

@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
  */
 public class ServerRunner {
 	
-	// enter key (AKA character return)
+	// enter key (AKA CRLF)
 	private final char ENTER = org.eclipse.swt.SWT.CR;
 	// up arrow
 	private final int UP = org.eclipse.swt.SWT.ARROW_UP;
@@ -65,7 +65,7 @@ public class ServerRunner {
 	
 	// This is being used instead of String[] because the ArrayList is mutable whereas the usual String[] array is not.
 	private ArrayList<String> commandHistory = new ArrayList<String>();
-	private int currentIndex = commandHistory.size();
+	private int currentIndex = 0;
 	private String currentCommand = "";
 	
 	/**
@@ -141,8 +141,8 @@ public class ServerRunner {
                 				if (e.keyCode == ENTER) {
                 					String com = commandLine.getText().trim();
                 					
-                					// if there was a command in the text box
-                					if (!com.equals("")) {
+                					// if there was a command in the text box AND the server is actually running
+                					if (!com.equals("") && p.isAlive() == true) {
                 						// run the command
                 						scr.command(com);
                 						
@@ -172,39 +172,41 @@ public class ServerRunner {
                 				if (e.keyCode == UP || e.keyCode == DOWN) {
                 					String com = commandLine.getText().trim();
                 					
-                					if (!com.equals("")) {
-                						// if the command entered isn't nothing, then store it
+                					if (e.keyCode == UP && currentIndex == commandHistory.size()) {
                 						currentCommand = com;
-                					}
-                					else {
-                						currentCommand = "";
                 					}
                 					
                 					// now based on which arrow key was pressed, either go up in history or down
                 					switch(e.keyCode) {
                 					case UP:
+                						System.out.println("Before up:\n  Index = " + currentIndex);
                 						if (commandHistory.size() > 0 && currentIndex > 0) {
                 							currentIndex --;
                 							commandLine.setText(commandHistory.get(currentIndex));
+                							System.out.println("After up:\n  Index = " + currentIndex);
                 						}
                 						break;
                 					case DOWN:
+                						System.out.println("Before down:\n  Index = " + currentIndex);
                 						if (commandHistory.size() > 0 && currentIndex < commandHistory.size() - 1) {
                 							currentIndex ++;
                 							commandLine.setText(commandHistory.get(currentIndex));
+                							System.out.println("After down:\n  Index = " + currentIndex);
                 						}
-                						if (currentIndex == commandHistory.size() - 1) {
-                							if (!currentCommand.equals("")) {
-                								commandLine.setText(currentCommand);
-                							}
-                							else {
-                								commandLine.setText("");
-                							}
+                						else if (currentIndex == commandHistory.size() - 1) {
+                							System.out.println("can has got here?");
+                							currentIndex ++;
+                							commandLine.setText(currentCommand);
+                							System.out.println("After down:\n  Index = " + currentIndex);
                 						}
                 						break;
                 					}
+                					
+                					
                 				}
+                				commandLine.setSelection(commandLine.getText().length());
                 			}
+                			
                 		});
             		}
             		
