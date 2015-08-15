@@ -1,2 +1,2 @@
-In the event that you downloaded this and are very confused as to what you are supposed to do (as there are tywo projects here) - you need to open both projects in Eclipse simultaneously.
-Also, make sure that you have SWT installed (just google it - it's not that hard).
+In the event that you downloaded this and are very confused as to what you are supposed to do (as there are two projects here) - you need to open both projects in Eclipse simultaneously.
+Also, make sure that you have SWT installed (just google it - it's not that hard). It does require Eclipse, however.

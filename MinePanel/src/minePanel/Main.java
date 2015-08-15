@@ -1,5 +1,10 @@
 package minePanel;
 
+/**
+ * while this class is not strictly necessary due to the main() in ServerPanel, I am too lazy to fix it so it will remain.
+ * @author will
+ *
+ */
 public class Main {
 	public static ServerPanel panel = new ServerPanel();
 	static FileManager fm = new FileManager();

@@ -126,7 +126,7 @@ public class PropertiesPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
-		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
+		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shlProperties.setSize(471, 292);
 		shlProperties.setText("Server Properties");
 		
@@ -229,6 +229,17 @@ public class PropertiesPanel {
 				}
 			}
 		});
+		
+		Button btnAdvanced = new Button(shlProperties, SWT.NONE);
+		btnAdvanced.setBounds(342, 196, 113, 25);
+		btnAdvanced.setText("Advanced...");
+		btnAdvanced.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				AdvancedPropertiesPanel aPP = new AdvancedPropertiesPanel();
+				aPP.open();
+			}
+		});
 	}
 	
 	/**
@@ -245,26 +256,5 @@ public class PropertiesPanel {
 			b.setSelection(false);
 			System.out.println("Property '" + pName + "' is false, disabling checkbox.");
 		}
-	}
-}
-
-/**
- * basically a simple way to store the properties that I need
- * while this is no longer used, I keep it just in case. most likely removed in another update later on.
- * @author will
- *
- */
-class Property {
-	public String value;
-	public String name;
-	
-	/**
-	 * Constructor for the Property class
-	 * @param _name property name
-	 * @param _value property value
-	 */
-	public Property(String _name, String _value) {
-		this.name = _name;
-		this.value = _value;
 	}
 }
