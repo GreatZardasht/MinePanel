@@ -3,6 +3,8 @@ package minePanel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Label;
@@ -67,13 +69,19 @@ public class ServerPanel {
 		shlMinepanel.setText("MinePanel");
 		
 		
-		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		consoleBox.setWrapIndent(40);
 		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
 		consoleBox.setDoubleClickEnabled(false);
 		consoleBox.setEditable(false);
 		consoleBox.setBounds(156, 10, 608, 346);
 		consoleBox.setAlwaysShowScrollBars(true);
+		// when text is added to it, always scroll to the bottom
+		consoleBox.addListener(SWT.Modify, new Listener(){
+		    public void handleEvent(Event e){
+		        consoleBox.setTopIndex(consoleBox.getLineCount() - 1);
+		    }
+		});
 		
 		entryBox = new Text(shlMinepanel, SWT.BORDER);
 		entryBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
