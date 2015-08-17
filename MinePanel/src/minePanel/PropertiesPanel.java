@@ -54,10 +54,15 @@ public class PropertiesPanel {
 		
 		
 		try {
-			properties.load(new FileInputStream("server.properties"));
-			for(String key : properties.stringPropertyNames()) {
-				String value = properties.getProperty(key);
-				
+			File propertiesFile = new File("server.properties");
+			if (propertiesFile.exists()) {
+				properties.load(new FileInputStream(propertiesFile));
+				for(String key : properties.stringPropertyNames()) {
+					String value = properties.getProperty(key);
+				}
+			} else {
+				System.out.println("No properties file found");
+				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

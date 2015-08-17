@@ -304,6 +304,9 @@ public class ServerRunner {
             });
             
         } catch (IOException e) {
+    		consolePrint("[Minepanel] Unable to start server...");
+    		consolePrint(e.getMessage());
+    		consolePrint("[Minepanel] Did you configure you java path correctly ?");
             e.printStackTrace();
         }
 		
