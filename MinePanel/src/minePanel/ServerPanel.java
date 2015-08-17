@@ -10,6 +10,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Label;
@@ -136,8 +137,22 @@ public class ServerPanel {
 				}
 			}
 		});
-		commandsLink.setBounds(25, 181, 110, 15);
+		commandsLink.setBounds(20, 198, 110, 15);
 		commandsLink.setText("<a>Custom commands?</a>");
+		
+		// this button is here to tell the user how to add themselves to the white list
+		Button btnWL = new Button(shlMinepanel, SWT.NONE);
+		btnWL.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				MessageBox msg = new MessageBox(shlMinepanel, SWT.ICON_INFORMATION);
+				msg.setText("How to edit the whitelist:");
+				msg.setMessage("To add yourself to the white list, use the \"whitelist add [name]\" command. Use \"whitelist remove [name]\" to remove someone. If you can't join after adding yourself, try \"whitelist reload\".");
+				msg.open();
+			}
+		});
+		btnWL.setBounds(10, 167, 140, 25);
+		btnWL.setText("White List");
 
 	}
 	

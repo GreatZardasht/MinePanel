@@ -50,6 +50,10 @@ public class PropertiesPanel {
 	public Shell shlProperties;
 	private Text motdBox;
 	
+	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void open() {
 		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shlProperties.setSize(471, 292);
@@ -63,14 +67,9 @@ public class PropertiesPanel {
 					String value = properties.getProperty(key);
 				}
 			} else {
-				//ServerPanel.runner.consolePrint("Server.properties was not found."); 
-				/*
-				 * ServerPanel.runner is null at this point if the server hasn't been started so we can't output anything to the console.
-				 * This is a design issue, maybe the console should not depend on the server process. Meanwhile, the workaround is a messagebox
-				 */
 				MessageBox msg = new MessageBox(shlProperties, SWT.ICON_ERROR);
 				msg.setText("An error occurred!");
-				msg.setMessage("Server.properties was not found.");
+				msg.setMessage("Server.properties was not found. Start the server to create a new one.");
 				msg.open();
 				shlProperties.close();
 				return;
@@ -138,9 +137,7 @@ public class PropertiesPanel {
 		}
 	}
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+	
 	protected void createContents() {
 		
 		Label lblMotd = new Label(shlProperties, SWT.NONE);
@@ -190,8 +187,17 @@ public class PropertiesPanel {
 		setState(btnWhitelist, "white-list");
 		
 		Link whitelistLink = new Link(grpGameSettings, SWT.NONE);
-		whitelistLink.setBounds(109, 132, 76, 15);
-		whitelistLink.setText("<a>Edit whitelist</a>");
+		whitelistLink.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				MessageBox msg = new MessageBox(shlProperties, SWT.ICON_INFORMATION);
+				msg.setText("How to edit the whitelist:");
+				msg.setMessage("To add yourself to the white list, use the \"whitelist add [name]\" command. Use \"whitelist remove [name]\" to remove someone. If you can't join after adding yourself, try \"whitelist reload\".");
+				msg.open();
+			}
+		});
+		whitelistLink.setBounds(109, 132, 137, 15);
+		whitelistLink.setText("<a>How to edit whitelist</a>");
 		
 		Button btnAllowNether = new Button(grpGameSettings, SWT.CHECK);
 		btnAllowNether.setBounds(10, 153, 187, 16);
