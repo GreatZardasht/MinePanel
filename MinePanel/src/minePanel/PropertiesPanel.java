@@ -67,15 +67,11 @@ public class PropertiesPanel {
 					String value = properties.getProperty(key);
 				}
 			} else {
-				MessageBox msg = new MessageBox(shlProperties, SWT.ICON_ERROR);
-				msg.setText("An error occurred!");
-				msg.setMessage("Server.properties was not found. Start the server to create a new one.");
-				msg.open();
-				shlProperties.close();
+				ErrorHandler.displayError("Server.properties was not found. Start the server to create a new one.");
 				return;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			ErrorHandler.displayError("Could not read the server.properties file", e);
 		}
 		
 		for (String key : properties.stringPropertyNames()) {
@@ -244,7 +240,7 @@ public class PropertiesPanel {
 					shlProperties.close();
 					
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					ErrorHandler.displayError("Could not open the server.properties file for reading.", ex);
 				}
 			}
 		});

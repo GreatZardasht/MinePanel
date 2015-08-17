@@ -47,10 +47,12 @@ public class ServerPanel {
 			ServerPanel window = new ServerPanel();
 			window.open();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			//I don't think any exception might be thrown here but why not.
+			ErrorHandler.displayError("Wow.", "Could not even show the main window, you might be having some big trouble", e);
 		}
 	}
-
+	
 	/**
 	 * Open the window.
 	 */
@@ -133,7 +135,8 @@ public class ServerPanel {
 				try {
 					openWebpage(new URL("https://github.com/WillEccles/MinePanel/wiki/Custom-Commands"));
 				} catch (Exception e2) {
-					e2.printStackTrace();
+					//This should not happen, openWebpage does not throw anything
+					ErrorHandler.displayError("Could not open the wiki page", e2);
 				}
 			}
 		});
@@ -163,7 +166,7 @@ public class ServerPanel {
 		        try {
 		            desktop.browse(uri);
 		        } catch (Exception e) {
-		            e.printStackTrace();
+		        	ErrorHandler.displayError("Opening the following uri :" + uri + " failed.", e);
 		        }
 		    }
 		}
@@ -171,7 +174,7 @@ public class ServerPanel {
 		    try {
 		        openWebpage(url.toURI());
 		    } catch (URISyntaxException e) {
-		        e.printStackTrace();
+		    	ErrorHandler.displayError("This should not have happened!", "The url passed had an invalid format ! (" + url + ")");
 		    }
 		}
 }

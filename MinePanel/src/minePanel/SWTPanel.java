@@ -38,7 +38,8 @@ public class SWTPanel {
 			SWTPanel window = new SWTPanel();
 			window.open();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//Same as ServerPanel, there shouldn't be any exception thrown here.
+			ErrorHandler.displayError("Wow.", "Could not even show the main window, you might be having some big trouble", e);
 		}
 	}
 

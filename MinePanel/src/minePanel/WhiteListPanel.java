@@ -23,11 +23,7 @@ public class WhiteListPanel {
 			//File whiteList = new File("whitelist.json")
 			//if ()
 		} catch (Exception e) {
-			MessageBox msg = new MessageBox(shl, SWT.ICON_ERROR);
-			msg.setText("An error occurred!");
-			msg.setMessage("White list file was not found. Start the server to create a new one.");
-			msg.open();
-			shl.close();
+			ErrorHandler.displayError("Could not read the whitelist file, have you already started the server once ?", e);
 			return;
 		}
 		

@@ -174,7 +174,7 @@ public class ServerRunner {
             			s.close();
             		}
             	} catch (Exception e) {
-            		e.printStackTrace();
+            		ErrorHandler.displayError("Could not load the custom commands file", e);
             	}
             	
             });
@@ -307,7 +307,7 @@ public class ServerRunner {
     		consolePrint("[Minepanel] Unable to start server...");
     		consolePrint(e.getMessage());
     		consolePrint("[Minepanel] Did you configure your java path correctly?");
-            e.printStackTrace();
+            ErrorHandler.displayError("Unable to start the server", "The server process could not be started, do you have java in your path ?", e);
         }
 		
         
@@ -380,7 +380,7 @@ public class ServerRunner {
 								}
 								
 							} catch (Exception e) {
-								e.printStackTrace();
+								ErrorHandler.displayError("Could not load the MOTD from the server.properties file!", e);
 							}
 							
 							
@@ -422,7 +422,7 @@ public class ServerRunner {
 				}
 				reader.close();
 			} catch(IOException e) {
-				e.printStackTrace();
+				ErrorHandler.displayError("An error occurred while trying to read the output from the server process.", e);
 			}
 		}
 		
@@ -435,8 +435,7 @@ public class ServerRunner {
 				w.flush();
 				
 			} catch (Exception e) {
-				consolePrint("Command failed for some reason, see stack trace.");
-				e.printStackTrace();
+				ErrorHandler.displayError("The command could not be executed for an unknown reason", e);
 			}
 		}
 	}
