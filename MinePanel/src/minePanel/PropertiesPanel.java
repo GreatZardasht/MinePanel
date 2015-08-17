@@ -61,7 +61,8 @@ public class PropertiesPanel {
 					String value = properties.getProperty(key);
 				}
 			} else {
-				System.out.println("No properties file found");
+				ServerPanel.runner.consolePrint("Server.properties was not found.");
+				shlProperties.close();
 				return;
 			}
 		} catch (Exception e) {

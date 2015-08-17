@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Link;
 
 public class ServerPanel {
 
-	ServerRunner runner;
+	public static ServerRunner runner;
 	
 	public Shell shlMinepanel;
 	public Text entryBox;
@@ -136,7 +136,7 @@ public class ServerPanel {
 				}
 			}
 		});
-		commandsLink.setBounds(10, 193, 140, 15);
+		commandsLink.setBounds(25, 181, 110, 15);
 		commandsLink.setText("<a>Custom commands?</a>");
 
 	}

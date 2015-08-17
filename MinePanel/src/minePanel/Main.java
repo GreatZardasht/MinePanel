@@ -19,6 +19,10 @@ public class Main {
 	
 	public static void main(String[] args) {
 		if (!(new File(MY_JAVA_LOC)).exists()) MY_JAVA_LOC = getJavaDir();
+		
+		// at some point, I will have to think of a way to let the user change deditated wam for the server.
+		// if they have 32-bit java they can't use more than 1GB (i think)
+		
 		panel.open();
 	}
 	
