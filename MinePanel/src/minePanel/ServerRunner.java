@@ -357,7 +357,6 @@ public class ServerRunner {
 							while (it.hasNext()) {
 								Map.Entry pair = (Map.Entry)it.next();
 								scr.command("tellraw " + uName + " {text:\"    !" + pair.getKey() + "\",color:yellow}");
-								it.remove();
 							}
 							
 						}
