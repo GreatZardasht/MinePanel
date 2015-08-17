@@ -87,7 +87,7 @@ public class AdvancedPropertiesPanel {
 						// store properties
 						properties.store(new FileOutputStream("server.properties"), "Minecraft server properties");
 					} catch (Exception e2) {
-						e2.printStackTrace();
+						ErrorHandler.displayError(e2);
 					}
 				}
 				
@@ -102,31 +102,12 @@ public class AdvancedPropertiesPanel {
 			public void mouseUp(MouseEvent e) {
 				// open http://minecraft.gamepedia.com/Server_properties#Minecraft_server_properties
 				try {
-					openWebpage(new URL("http://minecraft.gamepedia.com/Server_properties#Minecraft_server_properties"));
+					ServerPanel.openWebpage(new URL("http://minecraft.gamepedia.com/Server_properties#Minecraft_server_properties"));
 				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					//Should not display, as openWebpage doesn't throw anything
+					ErrorHandler.displayError("This should not have happened!", "The wiki url is invalid!");
 				}
 			}
 		});
-	}
-	
-	// the next two methods have to do with opening URLs.
-	public static void openWebpage(URI uri) {
-	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-	        try {
-	            desktop.browse(uri);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
-	}
-	public static void openWebpage(URL url) {
-	    try {
-	        openWebpage(url.toURI());
-	    } catch (URISyntaxException e) {
-	        e.printStackTrace();
-	    }
 	}
 }

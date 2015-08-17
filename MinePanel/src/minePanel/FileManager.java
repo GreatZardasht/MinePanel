@@ -37,11 +37,9 @@ public class FileManager {
 				BufferedWriter bw = new BufferedWriter(fw);
 				FileReader fr = new FileReader(PROPS);
 				BufferedReader br = new BufferedReader(fr);
-				
-				
 			}
 			catch (Exception e) {
-				System.err.println(e);
+				ErrorHandler.displayError("Error while writing to the server.properties file", e);
 			}
 		}
 		else {
