@@ -71,7 +71,7 @@ public class PropertiesPanel {
 				return;
 			}
 		} catch (Exception e) {
-			ErrorHandler.displayError("Could not read the server.properties file", e);
+			ErrorHandler.displayError("Could not read the server.properties file! Is it corrupted?", e);
 		}
 		
 		for (String key : properties.stringPropertyNames()) {
@@ -240,7 +240,7 @@ public class PropertiesPanel {
 					shlProperties.close();
 					
 				} catch (Exception ex) {
-					ErrorHandler.displayError("Could not open the server.properties file for reading.", ex);
+					ErrorHandler.displayError("Could not open the server.properties file for writing.", ex);
 				}
 			}
 		});

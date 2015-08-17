@@ -307,7 +307,7 @@ public class ServerRunner {
     		consolePrint("[Minepanel] Unable to start server...");
     		consolePrint(e.getMessage());
     		consolePrint("[Minepanel] Did you configure your java path correctly?");
-            ErrorHandler.displayError("Unable to start the server", "The server process could not be started, do you have java in your path ?", e);
+            ErrorHandler.displayError("Unable to start the server", "The server process could not be started, do you have java in your path?", e);
         }
 		
         
