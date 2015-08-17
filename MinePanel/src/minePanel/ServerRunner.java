@@ -1,6 +1,8 @@
 package minePanel;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +33,11 @@ import org.eclipse.swt.widgets.Text;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,6 +56,7 @@ public class ServerRunner {
 	// down arrow
 	private final int DOWN = org.eclipse.swt.SWT.ARROW_DOWN;
 	
+	private final String commandSplitter = "          ";
 	
 	private String jarName;
 	private int usedRAM;
@@ -67,6 +75,10 @@ public class ServerRunner {
 	private ArrayList<String> commandHistory = new ArrayList<String>();
 	private int currentIndex = 0;
 	private String currentCommand = "";
+	
+	private ServerConsoleReader scr;
+	
+	private HashMap<String, String> customCommands = new HashMap<String, String>();
 	
 	/**
 	 * Class resposible for running the server jar file.
@@ -114,7 +126,7 @@ public class ServerRunner {
 		ProcessBuilder pb = new ProcessBuilder(jarArgs);
         try {
             Process p = pb.start();
-            ServerConsoleReader scr = new ServerConsoleReader(p.getInputStream(), p.getOutputStream());
+            scr = new ServerConsoleReader(p.getInputStream(), p.getOutputStream());
             
             // serverconsolereader's thread
             Thread readerThread = new Thread(scr, "ServerConsoleReader");
@@ -125,7 +137,47 @@ public class ServerRunner {
             quitButton.setEnabled(true);
             propsButton.setEnabled(false);
             
-            
+            // this will load commands at the same time as everything else is happening. pretty handy for long lists of commands.
+            // also, a lambda! OOOOOOH
+            Display.getDefault().asyncExec(() -> {
+            	try {
+            		if (new File("MPCommands.txt").exists()) {
+            			Scanner s = new Scanner(new BufferedReader(new FileReader("MPCommands.txt")));
+            			
+            			String commandName = "";
+            			String commandValue = "";
+            			
+            			while (s.hasNext()) {
+            				String line = s.nextLine();
+            				
+            				// if the previous command and command value have been added, add them to the list
+            				// this only happens if the next line is a new command
+        					if (!commandName.equals("") && !commandValue.equals("") && line.matches("^(!+)?[A-Za-z]+:$")) {
+        						customCommands.put(commandName, commandValue);
+        					}
+            				if (line.matches("^(!+)?[A-Za-z]+:$")) {	
+            					// save the new command name and get its value to add to the list
+            					commandName = line.replaceAll("[^A-Za-z]", "");
+            					commandValue = "";
+            				}
+            				if (line.matches("^/.+$")) {
+            					// add the command to the command value with an additional 10 spaces at the end for splitting later
+            					commandValue += line.replaceAll("^/", "").trim() + commandSplitter;
+            				}
+            			}
+            			
+            			// clean up the last command, which won't get caught by the while loop
+            			if (!commandName.equals("") && !commandValue.equals("")) {
+            				customCommands.put(commandName, commandValue);
+            			}
+            			
+            			s.close();
+            		}
+            	} catch (Exception e) {
+            		e.printStackTrace();
+            	}
+            	
+            });
             
             // listeners being added on another thread asyncronously
             Display.getDefault().asyncExec(new Runnable() {
@@ -179,25 +231,25 @@ public class ServerRunner {
                 					// now based on which arrow key was pressed, either go up in history or down
                 					switch(e.keyCode) {
                 					case UP:
-                						System.out.println("Before up:\n  Index = " + currentIndex);
+                						
                 						if (commandHistory.size() > 0 && currentIndex > 0) {
                 							currentIndex --;
                 							commandLine.setText(commandHistory.get(currentIndex));
-                							System.out.println("After up:\n  Index = " + currentIndex);
+                							
                 						}
                 						break;
                 					case DOWN:
-                						System.out.println("Before down:\n  Index = " + currentIndex);
+                						
                 						if (commandHistory.size() > 0 && currentIndex < commandHistory.size() - 1) {
                 							currentIndex ++;
                 							commandLine.setText(commandHistory.get(currentIndex));
-                							System.out.println("After down:\n  Index = " + currentIndex);
+                							
                 						}
                 						else if (currentIndex == commandHistory.size() - 1) {
-                							System.out.println("can has got here?");
+                							
                 							currentIndex ++;
                 							commandLine.setText(currentCommand);
-                							System.out.println("After down:\n  Index = " + currentIndex);
+                							
                 						}
                 						break;
                 					}
@@ -259,16 +311,91 @@ public class ServerRunner {
 	}
 	
 	/**
-	 * This method will allow printing to the console from another thread
+	 * This method will allow printing to the console from another thread/just makes it way easier to print to the console.
 	 * @param line Line to print to the console box
 	 */
-	public static void consolePrint(final String line) {
+	public void consolePrint(final String line) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!consoleBox.isDisposed()) {
 					if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
 					else consoleBox.append(System.lineSeparator() + line);
+					
+					// this is where we test to see if the stop command was issued in chat
+					// it looks like this:
+					//    [21:15:54] [Server thread/INFO]: [CactusMcFly: Stopping the server]
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .[A-Za-z0-9_]{1,16}: Stopping the server.$")) {
+						runButton.setEnabled(true);
+    		            quitButton.setEnabled(false);
+    		            propsButton.setEnabled(true);
+					}
+					
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .[A-Za-z0-9_]{1,16} joined the game$")) {
+						String[] parts = line.split(" ");
+						String uName = parts[3];
+						scr.command("tellraw " + uName + " {text:\"Welcome, " + uName + "! This server uses MinePanel. Use !commands\",color:gold}");
+						scr.command("tellraw " + uName + " {text:\"to see all of the commands added to this server!\",color:gold}");
+					}
+					
+					// this is where it gets fun. we will now get into custom commands.
+					// at the time of this writing, there are other, more important things to do first,
+					// but this is more fun ;)
+					// this starts by catching anything people say that starts with !
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <[A-Za-z0-9_]{1,16}> ![A-Za-z]+$")) {
+						String[] parts = line.split(" ");
+						String uName = parts[3].replace("<", "").replace(">", "");
+						String command = parts[4].replace("!", "");
+						
+						if (command.equals("commands")) {
+							scr.command("tellraw " + uName + " {text:\"Custom commands available through MinePanel:\",color:green,italic:true}");
+							scr.command("tellraw " + uName + " {text:\"    !commands - show this list\",color:yellow}");
+							scr.command("tellraw " + uName + " {text:\"    !motd - show the server MOTD\",color:yellow}");
+							
+							// iterate over the custom commands, if there are any
+							Iterator it = customCommands.entrySet().iterator();
+							while (it.hasNext()) {
+								Map.Entry pair = (Map.Entry)it.next();
+								scr.command("tellraw " + uName + " {text:\"    !" + pair.getKey() + "\",color:yellow}");
+								it.remove();
+							}
+							
+						}
+						if (command.equals("motd")) {
+							Properties properties = new Properties();
+							String MOTD;
+							try {
+								
+								properties.load(new FileInputStream("server.properties"));
+								
+								MOTD = properties.getProperty("motd");
+								
+								if (!MOTD.equals(null)) {
+									scr.command("tellraw @a {text:\"Server MOTD:\",color:green}");
+									scr.command("tellraw @a {text:\"" + MOTD + "\",color:green,italic:true}");
+								} else {
+									scr.command("tellraw @a {text:\"No MOTD found. Check server.properties and make sure the motd line is there.\",color:red}");
+								}
+								
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							
+							
+						}
+						if (!command.equals("commands") && !command.equals("motd")) {
+							if (!customCommands.containsKey(command)) {
+								scr.command("tellraw " + uName + " {text:\"Command '!" + command + "' does not exist.\",color:red}");
+							}
+							else {
+								String[] commands = customCommands.get(command).split(commandSplitter);
+								for (String comm : commands) {
+									scr.command(comm.replace("$[user]", uName).replace("$[command]", command));
+								}
+							}
+						}
+						
+					}
 				}
 			}
 		});

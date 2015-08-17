@@ -1,5 +1,10 @@
 package minePanel;
 
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
@@ -18,6 +23,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.widgets.Link;
 
 public class ServerPanel {
 
@@ -118,6 +124,39 @@ public class ServerPanel {
 		});
 		propertiesButton.setBounds(10, 136, 140, 25);
 		propertiesButton.setText("Server Properties...");
+		
+		Link commandsLink = new Link(shlMinepanel, SWT.NONE);
+		commandsLink.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					openWebpage(new URL("https://github.com/WillEccles/MinePanel/wiki/Custom-Commands"));
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+		});
+		commandsLink.setBounds(10, 193, 140, 15);
+		commandsLink.setText("<a>Custom commands?</a>");
 
 	}
+	
+	// the next two methods have to do with opening URLs.
+		public static void openWebpage(URI uri) {
+		    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+		        try {
+		            desktop.browse(uri);
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
+		public static void openWebpage(URL url) {
+		    try {
+		        openWebpage(url.toURI());
+		    } catch (URISyntaxException e) {
+		        e.printStackTrace();
+		    }
+		}
 }
