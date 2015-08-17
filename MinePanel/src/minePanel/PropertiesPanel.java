@@ -51,7 +51,9 @@ public class PropertiesPanel {
 	private Text motdBox;
 	
 	public void open() {
-		
+		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
+		shlProperties.setSize(471, 292);
+		shlProperties.setText("Server Properties");
 		
 		try {
 			File propertiesFile = new File("server.properties");
@@ -61,7 +63,15 @@ public class PropertiesPanel {
 					String value = properties.getProperty(key);
 				}
 			} else {
-				ServerPanel.runner.consolePrint("Server.properties was not found.");
+				//ServerPanel.runner.consolePrint("Server.properties was not found."); 
+				/*
+				 * ServerPanel.runner is null at this point if the server hasn't been started so we can't output anything to the console.
+				 * This is a design issue, maybe the console should not depend on the server process. Meanwhile, the workaround is a messagebox
+				 */
+				MessageBox msg = new MessageBox(shlProperties, SWT.ICON_ERROR);
+				msg.setText("An error occurred!");
+				msg.setMessage("Server.properties was not found.");
+				msg.open();
 				shlProperties.close();
 				return;
 			}
@@ -132,9 +142,6 @@ public class PropertiesPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
-		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
-		shlProperties.setSize(471, 292);
-		shlProperties.setText("Server Properties");
 		
 		Label lblMotd = new Label(shlProperties, SWT.NONE);
 		lblMotd.setBounds(10, 10, 55, 15);
