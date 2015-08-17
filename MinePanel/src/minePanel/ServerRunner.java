@@ -337,7 +337,7 @@ public class ServerRunner {
 					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (§[a-z0-5A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-5A-Z])? joined the game$")) {
 						String[] parts = line.split(" ");
 						String uName = parts[3].replaceAll("(§[a-z0-5A-Z])", "");
-						scr.command("tellraw " + uName + " {text:\"Welcome, " + uName + "! This server uses MinePanel. Use !commands\",color:gold}");
+						scr.command("tellraw " + uName + " {text:\"Welcome, " + uName + "! This server uses MinePanel by Will Eccles. Use !commands\",color:gold}");
 						scr.command("tellraw " + uName + " {text:\"to see all of the commands added to this server!\",color:gold}");
 					}
 					
