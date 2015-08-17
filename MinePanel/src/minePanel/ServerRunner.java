@@ -328,15 +328,15 @@ public class ServerRunner {
 					// this is where we test to see if the stop command was issued in chat
 					// it looks like this:
 					//    [21:15:54] [Server thread/INFO]: [CactusMcFly: Stopping the server]
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .(§[a-z0-5A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-5A-Z])?: Stopping the server.$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .(§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])?: Stopping the server.$")) {
 						runButton.setEnabled(true);
     		            quitButton.setEnabled(false);
     		            propsButton.setEnabled(true);
 					}
 					
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (§[a-z0-5A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-5A-Z])? joined the game$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])? joined the game$")) {
 						String[] parts = line.split(" ");
-						String uName = parts[3].replaceAll("(§[a-z0-5A-Z])", "");
+						String uName = parts[3].replaceAll("(§[a-z0-9A-Z])", "");
 						scr.command("tellraw " + uName + " {text:\"Welcome, " + uName + "! This server uses MinePanel by Will Eccles. Use !commands\",color:gold}");
 						scr.command("tellraw " + uName + " {text:\"to see all of the commands added to this server!\",color:gold}");
 					}
@@ -345,9 +345,9 @@ public class ServerRunner {
 					// at the time of this writing, there are other, more important things to do first,
 					// but this is more fun ;)
 					// this starts by catching anything people say that starts with !
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <(§[a-z0-5A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-5A-Z])?> ![A-Za-z]+$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <(§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])?> ![A-Za-z]+$")) {
 						String[] parts = line.split(" ");
-						String uName = parts[3].replace("<", "").replace(">", "").replaceAll("(§[a-z0-5A-Z])", "");;
+						String uName = parts[3].replace("<", "").replace(">", "").replaceAll("(§[a-z0-9A-Z])", "");
 						String command = parts[4].replace("!", "");
 						
 						if (command.equals("commands")) {
