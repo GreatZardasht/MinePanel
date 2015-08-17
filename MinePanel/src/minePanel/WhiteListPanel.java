@@ -23,7 +23,7 @@ public class WhiteListPanel {
 			//File whiteList = new File("whitelist.json")
 			//if ()
 		} catch (Exception e) {
-			ErrorHandler.displayError("Could not read the whitelist file, have you already started the server once ?", e);
+			ErrorHandler.displayError("Could not read the whitelist file, have you already started the server once?", e);
 			return;
 		}
 		
