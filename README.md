@@ -27,3 +27,8 @@ Well, it'll be free. However, you can always buy the DLC to allow the app to run
 But seriously, it will be totally free. If you want to support me or you think the app is really good, you can always send me a donation through my [tip jar](https://www.coinbase.com/willeccles), courtesy of [Coinbase](https://www.coinbase.com) :)
 
 On the other hand, if you would rather not use bitcoins, you can [donate here.](https://secure2.wish.org/site/SPageServer?pagename=donate&chid=100-000)
+
+## All that legal licensing garbage:
+You can use this code in your own projects, but you must provide a description of changes to the code and a copyright notice.
+
+This open source project is distributed under the [Apache 2.0 License](https://github.com/WillEccles/MinePanel/blob/master/LICENSE.txt).
