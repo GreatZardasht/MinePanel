@@ -24,9 +24,7 @@ To be honest, I have no clue. I'm not working only on this, because I have to wo
 ## How much will it cost?
 Well, it'll be free. However, you can always buy the DLC to allow the app to run a server :trollface:
 
-But seriously, it will be totally free. If you want to support me or you think the app is really good, you can always send me a donation through my [tip jar](https://www.coinbase.com/willeccles), courtesy of [Coinbase](https://www.coinbase.com) :)
-
-On the other hand, if you would rather not use bitcoins, you can [donate here.](https://secure2.wish.org/site/SPageServer?pagename=donate&chid=100-000)
+But seriously, it will be totally free. If you like the project, you should [donate here.](https://secure2.wish.org/site/SPageServer?pagename=donate&chid=100-000) If you donate, prove it to me and I will add your name here ;)
 
 ## All that legal licensing garbage:
 You can use this code in your own projects, but you must provide a description of changes to the code and a copyright notice.
