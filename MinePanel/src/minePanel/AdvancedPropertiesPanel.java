@@ -95,7 +95,7 @@ public class AdvancedPropertiesPanel {
 				shl.close();
 			}
 		});
-		btnSave.setBounds(138, 167, 114, 25);
+		btnSave.setBounds(128, 167, 124, 25);
 		btnSave.setText("Save and close");
 		link.addMouseListener(new MouseAdapter() {
 			@Override

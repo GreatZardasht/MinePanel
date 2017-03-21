@@ -56,7 +56,7 @@ public class PropertiesPanel {
 	 */
 	public void open() {
 		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
-		shlProperties.setSize(471, 292);
+		shlProperties.setSize(471, 302);
 		shlProperties.setText("Server Properties");
 		
 		try {
@@ -141,44 +141,44 @@ public class PropertiesPanel {
 		lblMotd.setText("MOTD");
 		
 		motdBox = new Text(shlProperties, SWT.BORDER);
-		motdBox.setBounds(10, 31, 440, 21);
+		motdBox.setBounds(10, 31, 451, 21);
 		motdBox.setText(propsHash.get("motd"));
 		
 		Group grpGameSettings = new Group(shlProperties, SWT.NONE);
 		grpGameSettings.setText("Game Settings");
-		grpGameSettings.setBounds(10, 58, 270, 195);
+		grpGameSettings.setBounds(10, 58, 315, 213);
 		
 		Button btnPvp = new Button(grpGameSettings, SWT.CHECK);
 		btnPvp.setToolTipText("When turned on, players can hurt each other.");
-		btnPvp.setBounds(10, 21, 93, 16);
+		btnPvp.setBounds(10, 21, 263, 16);
 		btnPvp.setText("PVP");
 		setState(btnPvp, "pvp");
 		
 		Button btnMobsCanSpawn = new Button(grpGameSettings, SWT.CHECK);
 		btnMobsCanSpawn.setToolTipText("If disabled, monsters won't spawn even if the difficulty isn't peaceful.");
-		btnMobsCanSpawn.setBounds(10, 43, 236, 16);
+		btnMobsCanSpawn.setBounds(10, 43, 263, 16);
 		btnMobsCanSpawn.setText("Spawn monsters");
 		setState(btnMobsCanSpawn, "spawn-monsters");
 		
 		
 		Button btnGenStructures = new Button(grpGameSettings, SWT.CHECK);
-		btnGenStructures.setBounds(10, 65, 257, 16);
-		btnGenStructures.setText("Generate structures (villages, dungeons, etc.)");
+		btnGenStructures.setBounds(10, 65, 285, 16);
+		btnGenStructures.setText("Generate structures (villages, etc.)");
 		setState(btnGenStructures, "generate-structures");
 		
 		Button btnSpawnAnimals = new Button(grpGameSettings, SWT.CHECK);
 		btnSpawnAnimals.setText("Spawn animals");
-		btnSpawnAnimals.setBounds(10, 87, 100, 16);
+		btnSpawnAnimals.setBounds(10, 87, 263, 16);
 		setState(btnSpawnAnimals, "spawn-animals");
 		
 		Button btnAnnounceAchievements = new Button(grpGameSettings, SWT.CHECK);
-		btnAnnounceAchievements.setBounds(10, 109, 187, 16);
+		btnAnnounceAchievements.setBounds(10, 109, 275, 16);
 		btnAnnounceAchievements.setText("Announce player achievements");
 		setState(btnAnnounceAchievements, "announce-player-achievements");
 		
 		Button btnWhitelist = new Button(grpGameSettings, SWT.CHECK);
 		btnWhitelist.setToolTipText("If this is turned on, don't forget to add yourself to the list!");
-		btnWhitelist.setBounds(10, 131, 93, 16);
+		btnWhitelist.setBounds(10, 131, 120, 16);
 		btnWhitelist.setText("Use whitelist");
 		setState(btnWhitelist, "white-list");
 		
@@ -192,21 +192,21 @@ public class PropertiesPanel {
 				msg.open();
 			}
 		});
-		whitelistLink.setBounds(109, 132, 137, 15);
+		whitelistLink.setBounds(136, 132, 137, 15);
 		whitelistLink.setText("<a>How to edit whitelist</a>");
 		
 		Button btnAllowNether = new Button(grpGameSettings, SWT.CHECK);
-		btnAllowNether.setBounds(10, 153, 187, 16);
+		btnAllowNether.setBounds(10, 153, 275, 16);
 		btnAllowNether.setText("Allow nether (recommended)");
 		setState(btnAllowNether, "allow-nether");
 		
 		Button btnCMDBlocks = new Button(grpGameSettings, SWT.CHECK);
-		btnCMDBlocks.setBounds(10, 175, 157, 16);
+		btnCMDBlocks.setBounds(10, 175, 275, 16);
 		btnCMDBlocks.setText("Enable command blocks");
 		setState(btnCMDBlocks, "enable-command-block");
 		
 		Button btnSave = new Button(shlProperties, SWT.NONE);
-		btnSave.setBounds(342, 227, 113, 25);
+		btnSave.setBounds(331, 226, 130, 25);
 		btnSave.setText("Save and close");
 		btnSave.addMouseListener(new MouseAdapter() {
 			@Override
@@ -246,7 +246,7 @@ public class PropertiesPanel {
 		});
 		
 		Button btnAdvanced = new Button(shlProperties, SWT.NONE);
-		btnAdvanced.setBounds(342, 196, 113, 25);
+		btnAdvanced.setBounds(331, 196, 130, 25);
 		btnAdvanced.setText("Advanced...");
 		btnAdvanced.addMouseListener(new MouseAdapter() {
 			@Override

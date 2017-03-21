@@ -83,7 +83,7 @@ public class ServerPanel {
 		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
 		consoleBox.setDoubleClickEnabled(false);
 		consoleBox.setEditable(false);
-		consoleBox.setBounds(156, 10, 608, 346);
+		consoleBox.setBounds(167, 10, 597, 346);
 		consoleBox.setAlwaysShowScrollBars(true);
 		// when text is added to it, always scroll to the bottom
 		consoleBox.addListener(SWT.Modify, new Listener(){
@@ -94,26 +94,26 @@ public class ServerPanel {
 		
 		entryBox = new Text(shlMinepanel, SWT.BORDER);
 		entryBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
-		entryBox.setBounds(156, 362, 608, 21);
+		entryBox.setBounds(167, 362, 597, 21);
 		
 		startButton = new Button(shlMinepanel, SWT.NONE);
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				runner = new ServerRunner("server.jar", 3096, Main.MY_JAVA_LOC, true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel, propertiesButton);
+				runner = new ServerRunner("server.jar", 3096, Main.getJavaDir(), true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel, propertiesButton);
 				runner.startServer();
 			}
 		});
-		startButton.setBounds(10, 10, 140, 25);
+		startButton.setBounds(10, 10, 151, 25);
 		startButton.setText("Start Server");
 		
 		stopButton = new Button(shlMinepanel, SWT.NONE);
-		stopButton.setBounds(10, 41, 140, 25);
+		stopButton.setBounds(10, 41, 151, 25);
 		stopButton.setText("Stop Server");
 		stopButton.setEnabled(false);
 		
 		clearButton = new Button(shlMinepanel, SWT.NONE);
-		clearButton.setBounds(10, 72, 140, 21);
+		clearButton.setBounds(10, 72, 151, 21);
 		clearButton.setText("Clear Console");
 		
 		propertiesButton = new Button(shlMinepanel, SWT.NONE);
@@ -125,7 +125,7 @@ public class ServerPanel {
 				ppanel.open();
 			}
 		});
-		propertiesButton.setBounds(10, 136, 140, 25);
+		propertiesButton.setBounds(10, 136, 151, 25);
 		propertiesButton.setText("Server Properties...");
 		
 		Link commandsLink = new Link(shlMinepanel, SWT.NONE);
@@ -136,11 +136,11 @@ public class ServerPanel {
 					openWebpage(new URL("https://github.com/WillEccles/MinePanel/wiki/Custom-Commands"));
 				} catch (Exception e2) {
 					//This should not happen, openWebpage does not throw anything
-					ErrorHandler.displayError("Could not open the wiki page", e2);
+					ErrorHandler.displayError("Could not open the wiki page.", e2);
 				}
 			}
 		});
-		commandsLink.setBounds(20, 198, 110, 15);
+		commandsLink.setBounds(20, 198, 130, 15);
 		commandsLink.setText("<a>Custom commands?</a>");
 		
 		// this button is here to tell the user how to add themselves to the white list
@@ -154,7 +154,7 @@ public class ServerPanel {
 				msg.open();
 			}
 		});
-		btnWL.setBounds(10, 167, 140, 25);
+		btnWL.setBounds(10, 167, 151, 25);
 		btnWL.setText("White List");
 
 	}

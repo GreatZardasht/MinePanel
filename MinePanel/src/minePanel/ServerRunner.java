@@ -1,18 +1,20 @@
 package minePanel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-
-import javax.swing.JButton;
-import javax.swing.JTextArea;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Scanner;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -20,26 +22,12 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**
@@ -328,38 +316,38 @@ public class ServerRunner {
 					// this is where we test to see if the stop command was issued in chat
 					// it looks like this:
 					//    [21:15:54] [Server thread/INFO]: [CactusMcFly: Stopping the server]
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .(§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])?: Stopping the server.$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .(ï¿½[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(ï¿½[a-z0-9A-Z])?: Stopping the server.$")) {
 						runButton.setEnabled(true);
     		            quitButton.setEnabled(false);
     		            propsButton.setEnabled(true);
 					}
 					
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])? joined the game$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (ï¿½[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(ï¿½[a-z0-9A-Z])? joined the game$")) {
 						String[] parts = line.split(" ");
-						String uName = parts[3].replaceAll("(§[a-z0-9A-Z])", "");
-						scr.command("tellraw " + uName + " {text:\"Welcome, " + uName + "! This server uses MinePanel by Will Eccles. Use !commands\",color:gold}");
-						scr.command("tellraw " + uName + " {text:\"to see all of the commands added to this server!\",color:gold}");
+						String uName = parts[3].replaceAll("(ï¿½[a-z0-9A-Z])", "");
+						scr.command("tellraw " + uName + " {\"text\":\"Welcome, " + uName + "! This server uses MinePanel by Will Eccles. Use !commands\",\"color\":\"gold\"}");
+						scr.command("tellraw " + uName + " {\"text\":\"to see all of the commands added to this server!\",\"color\":\"gold\"}");
 					}
 					
 					// this is where it gets fun. we will now get into custom commands.
 					// at the time of this writing, there are other, more important things to do first,
 					// but this is more fun ;)
 					// this starts by catching anything people say that starts with !
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <(§[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(§[a-z0-9A-Z])?> ![A-Za-z]+$")) {
+					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <(ï¿½[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(ï¿½[a-z0-9A-Z])?> ![A-Za-z]+$")) {
 						String[] parts = line.split(" ");
-						String uName = parts[3].replace("<", "").replace(">", "").replaceAll("(§[a-z0-9A-Z])", "");
+						String uName = parts[3].replace("<", "").replace(">", "").replaceAll("(ï¿½[a-z0-9A-Z])", "");
 						String command = parts[4].replace("!", "");
 						
 						if (command.equals("commands")) {
-							scr.command("tellraw " + uName + " {text:\"Custom commands available through MinePanel:\",color:green,italic:true}");
-							scr.command("tellraw " + uName + " {text:\"    !commands - show this list\",color:yellow}");
-							scr.command("tellraw " + uName + " {text:\"    !motd - show the server MOTD\",color:yellow}");
+							scr.command("tellraw " + uName + " {\"text\":\"Custom commands available through MinePanel:\",\"color\":\"green\",\"italic\":true}");
+							scr.command("tellraw " + uName + " {\"text\":\"    !commands - show this list\",\"color\":\"yellow\"}");
+							scr.command("tellraw " + uName + " {\"text\":\"    !motd - show the server MOTD\",\"color\":\"yellow\"}");
 							
 							// iterate over the custom commands, if there are any
 							Iterator it = customCommands.entrySet().iterator();
 							while (it.hasNext()) {
 								Map.Entry pair = (Map.Entry)it.next();
-								scr.command("tellraw " + uName + " {text:\"    !" + pair.getKey() + "\",color:yellow}");
+								scr.command("tellraw " + uName + " {\"text\":\"    !" + pair.getKey() + "\",\"color\":\"yellow\"}");
 							}
 							
 						}
@@ -373,10 +361,10 @@ public class ServerRunner {
 								MOTD = properties.getProperty("motd");
 								
 								if (!MOTD.equals(null)) {
-									scr.command("tellraw @a {text:\"Server MOTD:\",color:green}");
-									scr.command("tellraw @a {text:\"" + MOTD + "\",color:green,italic:true}");
+									scr.command("tellraw @a {\"text\":\"Server MOTD:\",\"color\":\"green\"}");
+									scr.command("tellraw @a {\"text\":\"" + MOTD + "\",\"color\":\"green\",\"italic\":true}");
 								} else {
-									scr.command("tellraw @a {text:\"No MOTD found. Check server.properties and make sure the motd line is there.\",color:red}");
+									scr.command("tellraw @a {\"text\":\"No MOTD found. Check server.properties and make sure the motd line is there.\",\"color\":\"red\"}");
 								}
 								
 							} catch (Exception e) {
@@ -387,7 +375,7 @@ public class ServerRunner {
 						}
 						if (!command.equals("commands") && !command.equals("motd")) {
 							if (!customCommands.containsKey(command)) {
-								scr.command("tellraw " + uName + " {text:\"Command '!" + command + "' does not exist.\",color:red}");
+								scr.command("tellraw " + uName + " {\"text\":\"Command '!" + command + "' does not exist.\",\"color\":\"red\"}");
 							}
 							else {
 								String[] commands = customCommands.get(command).split(commandSplitter);
