@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -43,9 +45,7 @@ public class ServerRunner {
 	private final int UP = org.eclipse.swt.SWT.ARROW_UP;
 	// down arrow
 	private final int DOWN = org.eclipse.swt.SWT.ARROW_DOWN;
-	
-	private final String commandSplitter = "          ";
-	
+		
 	private String jarName;
 	private int usedRAM;
 	private String javaLocation;
@@ -56,7 +56,7 @@ public class ServerRunner {
 	private Button runButton;
 	private Button quitButton;
 	private Button clrButton;
-	private Shell MPShell = Main.panel.shlMinepanel; // the shell, I add a handler later
+	private Shell MPShell = Main._panel.shlMinepanel; // the shell, I add a handler later
 	private Button propsButton;
 	
 	// This is being used instead of String[] because the ArrayList is mutable whereas the usual String[] array is not.
@@ -66,13 +66,13 @@ public class ServerRunner {
 	
 	private ServerConsoleReader scr;
 	
-	private HashMap<String, String> customCommands = new HashMap<String, String>();
+	private HashMap<String, Vector<String>> customCommands = new HashMap<String, Vector<String>>();
 	
 	/**
 	 * Class resposible for running the server jar file.
 	 * And yes, it has the worst constructor params in the world. Don't judge me.
 	 * 
-	 * @param jarName The name of the server jar.
+	 * @param serverJarName The name of the server jar.
 	 * @param RAM The amount of RAM in MB to use.
 	 * @param javaLoc Location of java.
 	 * @param force64bit Whether or not to force 64-bit running of the server.
@@ -133,9 +133,9 @@ public class ServerRunner {
             			Scanner s = new Scanner(new BufferedReader(new FileReader("MPCommands.txt")));
             			
             			String commandName = "";
-            			String commandValue = "";
+            			Vector<String> commandValue = new Vector<String>();
             			
-            			while (s.hasNext()) {
+            			while(s.hasNext()) {
             				String line = s.nextLine();
             				
             				// if the previous command and command value have been added, add them to the list
@@ -143,15 +143,19 @@ public class ServerRunner {
         					if (!commandName.equals("") && !commandValue.equals("") && line.matches("^(!+)?[A-Za-z]+:$")) {
         						customCommands.put(commandName, commandValue);
         					}
-            				if (line.matches("^(!+)?[A-Za-z]+:$")) {	
+        					else if (line.matches("^(!+)?[A-Za-z]+:$")) {	
             					// save the new command name and get its value to add to the list
             					commandName = line.replaceAll("[^A-Za-z]", "");
-            					commandValue = "";
+            					commandValue.clear(); // empty the command value vector for reuse
             				}
-            				if (line.matches("^/.+$")) {
+        					else if (line.matches("^/.+$")) {
             					// add the command to the command value with an additional 10 spaces at the end for splitting later
-            					commandValue += line.replaceAll("^/", "").trim() + commandSplitter;
+            					commandValue.addElement(line.replaceAll("^/", "").trim());
             				}
+        					/*else if (line.matches("^@.+$")) {
+        						// commands started with an @ sign instead of a / will be run AS the player calling the command
+        						commandValue.addElement("execute $[user] ~ ~ ~ " + line.replaceAll("^/", "").trim());
+        					}*/
             			}
             			
             			// clean up the last command, which won't get caught by the while loop
@@ -171,7 +175,6 @@ public class ServerRunner {
             Display.getDefault().asyncExec(new Runnable() {
             	@Override
             	public void run() {
-            		
             		// add enter key listener for command line
             		if (!commandLine.isDisposed()) {
             			commandLine.addKeyListener(new KeyAdapter() {
@@ -316,24 +319,37 @@ public class ServerRunner {
 					// this is where we test to see if the stop command was issued in chat
 					// it looks like this:
 					//    [21:15:54] [Server thread/INFO]: [CactusMcFly: Stopping the server]
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: .(�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])?: Stopping the server.$")) {
+					if (line.matches("^\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] \\[Server thread/INFO\\]: \\[(�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])?: Stopping the server\\]$")) {
+						runButton.setEnabled(true);
+    		            quitButton.setEnabled(false);
+    		            propsButton.setEnabled(true);
+					}
+
+					// this is for when the user hasn't accped the EULA
+					// it'll show them a quick little message explaining how to do that
+					// even though I could automate that, it makes more sense for the end user to actually manually agree to the EULA
+					else if (line.matches("^\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] \\[Server thread/INFO\\]: You need to agree to the EULA in order to run the server. Go to eula.txt for more info.")) {
+						MessageBox msg = new MessageBox(MPShell, SWT.ICON_INFORMATION);
+						msg.setText("You need to accept the EULA");
+						msg.setMessage("The server will not run for the first time if you haven't accepted the EULA. The server has created a file called \"eula.txt\" in its folder. Go to that file and change the line that ends with \"=false\" to \"=true\" and then come back and run the server again.");
+						msg.open();
 						runButton.setEnabled(true);
     		            quitButton.setEnabled(false);
     		            propsButton.setEnabled(true);
 					}
 					
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: (�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])? joined the game$")) {
+					else if (line.matches("^\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] \\[Server thread/INFO\\]: (�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])? joined the game$")) {
 						String[] parts = line.split(" ");
 						String uName = parts[3].replaceAll("(�[a-z0-9A-Z])", "");
-						scr.command("tellraw " + uName + " {\"text\":\"Welcome, " + uName + "! This server uses MinePanel by Will Eccles. Use !commands\",\"color\":\"gold\"}");
-						scr.command("tellraw " + uName + " {\"text\":\"to see all of the commands added to this server!\",\"color\":\"gold\"}");
+						scr.command("tellraw " + uName + " {\"text\":\"Welcome, " + uName + "! This server uses MinePanel. Use !commands\",\"color\":\"gold\"}");
+						scr.command("tellraw " + uName + " {\"text\":\"to see all the custom commands you can use here.\",\"color\":\"gold\"}");
 					}
 					
 					// this is where it gets fun. we will now get into custom commands.
 					// at the time of this writing, there are other, more important things to do first,
 					// but this is more fun ;)
 					// this starts by catching anything people say that starts with !
-					if (line.matches("^.[0-9][0-9]:[0-9][0-9]:[0-9][0-9]. .Server thread/INFO.: <(�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])?> ![A-Za-z]+$")) {
+					else if (line.matches("^\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] \\[Server thread/INFO\\]: <(�[a-z0-9A-Z])?[A-Za-z0-9_]{1,16}(�[a-z0-9A-Z])?> ![A-Za-z]+$")) {
 						String[] parts = line.split(" ");
 						String uName = parts[3].replace("<", "").replace(">", "").replaceAll("(�[a-z0-9A-Z])", "");
 						String command = parts[4].replace("!", "");
@@ -351,7 +367,7 @@ public class ServerRunner {
 							}
 							
 						}
-						if (command.equals("motd")) {
+						else if (command.equals("motd")) {
 							Properties properties = new Properties();
 							String MOTD;
 							try {
@@ -364,22 +380,18 @@ public class ServerRunner {
 									scr.command("tellraw @a {\"text\":\"Server MOTD:\",\"color\":\"green\"}");
 									scr.command("tellraw @a {\"text\":\"" + MOTD + "\",\"color\":\"green\",\"italic\":true}");
 								} else {
-									scr.command("tellraw @a {\"text\":\"No MOTD found. Check server.properties and make sure the motd line is there.\",\"color\":\"red\"}");
+									scr.command("tellraw @a {\"text\":\"No MOTD set.\",\"color\":\"red\"}");
 								}
 								
 							} catch (Exception e) {
 								ErrorHandler.displayError("Could not load the MOTD from the server.properties file!", e);
 							}
-							
-							
-						}
-						if (!command.equals("commands") && !command.equals("motd")) {
+						} else {
 							if (!customCommands.containsKey(command)) {
 								scr.command("tellraw " + uName + " {\"text\":\"Command '!" + command + "' does not exist.\",\"color\":\"red\"}");
 							}
 							else {
-								String[] commands = customCommands.get(command).split(commandSplitter);
-								for (String comm : commands) {
+								for (String comm : customCommands.get(command)) {
 									scr.command(comm.replace("$[user]", uName).replace("$[command]", command));
 								}
 							}

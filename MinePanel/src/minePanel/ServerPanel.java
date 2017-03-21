@@ -72,7 +72,7 @@ public class ServerPanel {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		                       // disables the maximize button and resizing
+		// disables the maximize button and resizing
 		shlMinepanel = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
 		shlMinepanel.setSize(790, 427);
 		shlMinepanel.setText("MinePanel");

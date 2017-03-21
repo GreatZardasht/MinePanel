@@ -2,20 +2,27 @@ package minePanel;
 
 import java.io.File;
 
+import org.eclipse.swt.widgets.Display;
+
 /**
  * while this class is not strictly necessary due to the main() in ServerPanel, I am too lazy to fix it so it will remain.
  * @author will
  *
  */
 public class Main {
-	public static ServerPanel panel = new ServerPanel();
-	static FileManager fm = new FileManager();
+	public static ServerPanel _panel;
+	public static Display _defaultDisplay;
 	
-	public static void main(String[] args) {		
-		// at some point, I will have to think of a way to let the user change deditated wam for the server.
-		// if they have 32-bit java they can't use more than 1GB (i think)
-		
-		panel.open();
+	// perform main app setup upon startup
+	public Main() {
+		Display.setAppName("Minepanel");
+		_defaultDisplay = Display.getDefault();
+		_panel = new ServerPanel();
+		_panel.open();
+	}
+	
+	public static void main(String[] args) {
+		new Main(); // anonymous class since this will only be run once.
 	}
 	
     public static String getJavaDir() {
