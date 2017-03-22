@@ -1,10 +1,7 @@
 # MinePanel 
-A simple GUI for running your Minecraft server. Will show output, will allow you to easily edit properties, etc.
-This is not meant for large server owners (i.e. companies with rentable servers), but more for the average Joe who doesn't know what all the settings do or how to set up the server with the correct arguments.
+This will be a pretty simple-to-use interface for managing a Minecraft server. It gives you the ability to edit properties and such without ever having to touch the properties file, and if you want to change one of the more advanced properties, you can do that too. You can add custom commands, too! For more info about that, see the wiki.
 
-All the user has to do is forward a port and then the server app will do the rest!
-
-To discuss the app, timeline, features, or to submit requests/questions, head to the [subreddit](https://www.reddit.com/r/minepanel).
+All the user has to do is forward a port and then the app will do the rest! The only file the user has to manually edit is the EULA file created on startup for the first time, since if Minepanel edited it for them, they wouldn't have consciously agreed to the EULA.
 
 ## To-do:
 1. ~~Get it running the jar and showing the output. This is the current goal.~~
