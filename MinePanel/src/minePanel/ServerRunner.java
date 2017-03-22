@@ -108,7 +108,7 @@ public class ServerRunner {
 
 		// print some stuff and then clear the console before starting the server
 		consoleBox.setText("");
-		consolePrint("Loading MOTD from server.properties...");
+		consolePrint("[Minepanel] Loading MOTD from server.properties...");
 
 		try {
 			Properties properties = new Properties();
@@ -122,12 +122,12 @@ public class ServerRunner {
 			}
 
 		} catch (Exception e) {
-			consolePrint("Issue reading MOTD from server.properties, are you sure it's there?");
+			consolePrint("[Minepanel] Issue reading MOTD from server.properties, are you sure it's there?");
 		}
 
-		consolePrint("Starting Minecraft server...");
+		consolePrint("[Minepanel] Starting Minecraft server...");
 
-		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":""};
+		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"d32"};
 
 		ProcessBuilder pb = new ProcessBuilder(jarArgs);
 		try {
@@ -147,6 +147,8 @@ public class ServerRunner {
 			Display.getDefault().asyncExec(() -> {
 				try {
 					if (new File("MPCommands.txt").exists()) {
+						consolePrint("[Minepanel] Loading custom commands...");
+						
 						Scanner s = new Scanner(new BufferedReader(new FileReader("MPCommands.txt")));
 
 						String commandName = "";
@@ -177,6 +179,8 @@ public class ServerRunner {
 						}
 
 						s.close();
+					} else {
+						consolePrint("[Minepanel] MPCommands.txt not found, skipping commands...");
 					}
 				} catch (Exception e) {
 					ErrorHandler.displayError("Could not load the custom commands file", e);
@@ -261,7 +265,7 @@ public class ServerRunner {
 						@Override
 						public void mouseUp(MouseEvent e) {
 							// first run the stop command
-							consolePrint("Stop button pressed. Stopping server.");
+							consolePrint("[Minepanel] Stop button pressed. Stopping server.");
 							scr.command("stop");
 
 							runButton.setEnabled(true);
@@ -295,9 +299,9 @@ public class ServerRunner {
 			});
 
 		} catch (IOException e) {
-			consolePrint("Unable to start server...");
+			consolePrint("[Minepanel] Unable to start server...");
 			consolePrint(e.getMessage());
-			consolePrint("Did you configure your java path correctly?");
+			consolePrint("[Minepanel] Did you configure your java path correctly?");
 			ErrorHandler.displayError("Unable to start the server", "The server process could not be started, do you have java in your path?", e);
 		}
 	}
@@ -309,8 +313,8 @@ public class ServerRunner {
 	public void consolePrint(final String line) {
 		Display.getDefault().asyncExec(() -> {
 			if (!consoleBox.isDisposed()) {
-				if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append("[Minepanel] " + line);
-				else consoleBox.append(System.lineSeparator() + "[Minepanel] " + line);
+				if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
+				else consoleBox.append(System.lineSeparator() + line);
 
 				// this is where we test to see if the stop command was issued in chat
 				// it looks like this:
@@ -320,7 +324,14 @@ public class ServerRunner {
 					quitButton.setEnabled(false);
 					propsButton.setEnabled(true);
 				}
-
+				
+				// handle shutdown for another reason (when the server shuts down, but a player/the stop button didn't stop it
+				if (line.matches("^\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] \\[Server Shutdown Thread/.+?\\]:.+$")) {
+					runButton.setEnabled(true);
+					quitButton.setEnabled(false);
+					propsButton.setEnabled(true);
+				}
+				
 				// this is for when the user hasn't accped the EULA
 				// it'll show them a quick little message explaining how to do that
 				// even though I could automate that, it makes more sense for the end user to actually manually agree to the EULA
