@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Label;
 public class WhiteListPanel {
 
 	public Shell shl;
-	
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -18,7 +18,7 @@ public class WhiteListPanel {
 		shl = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shl.setSize(512, 355);
 		shl.setText("White List");
-		
+
 		try {
 			//File whiteList = new File("whitelist.json")
 			//if ()
@@ -26,7 +26,7 @@ public class WhiteListPanel {
 			ErrorHandler.displayError("Could not read the whitelist file, have you already started the server once?", e);
 			return;
 		}
-		
+
 		Display display = Display.getDefault();
 		createContents();
 		shl.open();

@@ -13,23 +13,23 @@ import java.io.FileWriter;
  * @author Will Eccles
  */
 public class FileManager {
-	
+
 	final static String PROPS = "server.properties"; // Properties file constant
 	final static String SERVER = "server.jar"; // Server file constant
-	
+
 	/** Check if "server.jar" is in folder. */
 	public static boolean checkJar() {
 		boolean check = new File(SERVER).exists();
 		if (check == true) return true;
 		else return false;
 	}
-	
+
 	public static boolean checkProps() {
 		boolean check = new File(PROPS).exists();
 		if (check == true) return true;
 		else return false;
 	}
-	
+
 	public static void setProp(String propertyName, String propertyValue) {
 		if (checkProps() == true) {
 			try { // Try to read and write the file
@@ -43,7 +43,7 @@ public class FileManager {
 			}
 		}
 		else {
-			
+
 		}
 	}
 }

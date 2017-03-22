@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Link;
 public class ServerPanel {
 
 	public static ServerRunner runner;
-	
+
 	public Shell shlMinepanel;
 	public Text entryBox;
 	public StyledText consoleBox;
@@ -52,7 +52,7 @@ public class ServerPanel {
 			ErrorHandler.displayError("Wow.", "Could not even show the main window, you might be having some big trouble", e);
 		}
 	}
-	
+
 	/**
 	 * Open the window.
 	 */
@@ -76,8 +76,8 @@ public class ServerPanel {
 		shlMinepanel = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
 		shlMinepanel.setSize(790, 427);
 		shlMinepanel.setText("MinePanel");
-		
-		
+
+
 		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		consoleBox.setWrapIndent(40);
 		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
@@ -87,15 +87,15 @@ public class ServerPanel {
 		consoleBox.setAlwaysShowScrollBars(true);
 		// when text is added to it, always scroll to the bottom
 		consoleBox.addListener(SWT.Modify, new Listener(){
-		    public void handleEvent(Event e){
-		        consoleBox.setTopIndex(consoleBox.getLineCount() - 1);
-		    }
+			public void handleEvent(Event e){
+				consoleBox.setTopIndex(consoleBox.getLineCount() - 1);
+			}
 		});
-		
+
 		entryBox = new Text(shlMinepanel, SWT.BORDER);
 		entryBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
 		entryBox.setBounds(167, 362, 597, 21);
-		
+
 		startButton = new Button(shlMinepanel, SWT.NONE);
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -106,16 +106,16 @@ public class ServerPanel {
 		});
 		startButton.setBounds(10, 10, 151, 25);
 		startButton.setText("Start Server");
-		
+
 		stopButton = new Button(shlMinepanel, SWT.NONE);
 		stopButton.setBounds(10, 41, 151, 25);
 		stopButton.setText("Stop Server");
 		stopButton.setEnabled(false);
-		
+
 		clearButton = new Button(shlMinepanel, SWT.NONE);
 		clearButton.setBounds(10, 72, 151, 21);
 		clearButton.setText("Clear Console");
-		
+
 		propertiesButton = new Button(shlMinepanel, SWT.NONE);
 		propertiesButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -127,7 +127,7 @@ public class ServerPanel {
 		});
 		propertiesButton.setBounds(10, 136, 151, 25);
 		propertiesButton.setText("Server Properties...");
-		
+
 		Link commandsLink = new Link(shlMinepanel, SWT.NONE);
 		commandsLink.addMouseListener(new MouseAdapter() {
 			@Override
@@ -142,7 +142,7 @@ public class ServerPanel {
 		});
 		commandsLink.setBounds(20, 198, 130, 15);
 		commandsLink.setText("<a>Custom commands?</a>");
-		
+
 		// this button is here to tell the user how to add themselves to the white list
 		Button btnWL = new Button(shlMinepanel, SWT.NONE);
 		btnWL.addMouseListener(new MouseAdapter() {
@@ -158,23 +158,23 @@ public class ServerPanel {
 		btnWL.setText("White List");
 
 	}
-	
+
 	// the next two methods have to do with opening URLs.
-		public static void openWebpage(URI uri) {
-		    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-		    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-		        try {
-		            desktop.browse(uri);
-		        } catch (Exception e) {
-		        	ErrorHandler.displayError("Opening the following uri :" + uri + " failed.", e);
-		        }
-		    }
+	public static void openWebpage(URI uri) {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.browse(uri);
+			} catch (Exception e) {
+				ErrorHandler.displayError("Opening the following uri :" + uri + " failed.", e);
+			}
 		}
-		public static void openWebpage(URL url) {
-		    try {
-		        openWebpage(url.toURI());
-		    } catch (URISyntaxException e) {
-		    	ErrorHandler.displayError("This should not have happened!", "The url passed had an invalid format ! (" + url + ")");
-		    }
+	}
+	public static void openWebpage(URL url) {
+		try {
+			openWebpage(url.toURI());
+		} catch (URISyntaxException e) {
+			ErrorHandler.displayError("This should not have happened!", "The url passed had an invalid format ! (" + url + ")");
 		}
+	}
 }
