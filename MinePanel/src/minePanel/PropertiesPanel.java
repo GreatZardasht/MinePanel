@@ -265,11 +265,11 @@ public class PropertiesPanel {
 	private void setState(Button b, String pName) {
 		if (propsHash.get(pName).equals("true")) {
 			b.setSelection(true);
-			System.out.println("Property '" + pName + "' is true, enabling checkbox.");
+			//System.out.println("Property '" + pName + "' is true, enabling checkbox.");
 		}
 		else {
 			b.setSelection(false);
-			System.out.println("Property '" + pName + "' is false, disabling checkbox.");
+			//System.out.println("Property '" + pName + "' is false, disabling checkbox.");
 		}
 	}
 }

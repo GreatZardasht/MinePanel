@@ -11,18 +11,18 @@ import org.eclipse.swt.widgets.Display;
  */
 public class Main {
 	public static ServerPanel _panel;
-	public static Display _defaultDisplay;
 
 	// perform main app setup upon startup
 	public Main() {
-		Display.setAppName("Minepanel");
-		_defaultDisplay = Display.getDefault();
 		_panel = new ServerPanel();
 		_panel.open();
 	}
 
 	public static void main(String[] args) {
+		Display _display = Display.getDefault();
+		Display.setAppName("Minepanel");
 		new Main(); // anonymous class since this will only be run once.
+		_display.dispose();
 	}
 
 	public static String getJavaDir() {
