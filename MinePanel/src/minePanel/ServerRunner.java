@@ -127,7 +127,7 @@ public class ServerRunner {
 
 		consolePrint("[Minepanel] Starting Minecraft server...");
 
-		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), ("-Xms"+usedRAM+"M"), nogui?"nogui":"", force64?"d64":"d32"};
+		String[] jarArgs = {javaLocation, "-jar", jarName, ("-Xmx"+usedRAM+"M"), "-Xincgc", nogui?"nogui":"", force64?"d64":"d32"};
 
 		ProcessBuilder pb = new ProcessBuilder(jarArgs);
 		try {
@@ -137,7 +137,7 @@ public class ServerRunner {
 			// serverconsolereader's thread
 			Thread readerThread = new Thread(scr, "ServerConsoleReader");
 			readerThread.start();
-
+			
 			// set button states
 			runButton.setEnabled(false);
 			quitButton.setEnabled(true);

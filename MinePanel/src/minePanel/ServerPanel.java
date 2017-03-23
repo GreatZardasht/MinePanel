@@ -1,9 +1,12 @@
 package minePanel;
 
 import java.awt.Desktop;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -57,13 +60,12 @@ public class ServerPanel {
 	 * Open the window.
 	 */
 	public void open() {
-		Display display = Display.getDefault();
 		createContents();
 		shlMinepanel.open();
 		shlMinepanel.layout();
 		while (!shlMinepanel.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+			if (!Display.getDefault().readAndDispatch()) {
+				Display.getDefault().sleep();
 			}
 		}
 	}
@@ -100,7 +102,37 @@ public class ServerPanel {
 		startButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				runner = new ServerRunner("server.jar", 3096, Main.getJavaDir(), true, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel, propertiesButton);
+				// first read the java settings file, assuming there is one. Otherwise, assume max of 1024MB memory and no 64-bit
+				int mem = 1024;
+				boolean d64 = false;
+				
+				try {
+					Properties props = new Properties();
+					File propertiesFile = new File("javasettings.properties");
+					if (propertiesFile.exists()) {
+						props.load(new FileInputStream(propertiesFile));
+						if (props.getProperty("memory") != null) {
+							try {
+								mem = Integer.parseInt(props.getProperty("memory"));
+							} catch (NumberFormatException e2) {
+								mem = 1024;
+							}
+						}
+						
+						if (props.getProperty("bitness") != null) {
+							if (props.getProperty("bitness").equals("64")) {
+								d64 = true;
+							} else {
+								d64 = false;
+							}
+						}
+					}
+				} catch (Exception e1) {
+					ErrorHandler.displayError("Error while reading or writing the Java settings file. Make sure you have permission to read and write in the server directory.", e1);
+					return;
+				}
+				
+				runner = new ServerRunner("server.jar", mem, Main.getJavaDir(), d64, true, consoleBox, entryBox, startButton, stopButton, clearButton, shlMinepanel, propertiesButton);
 				runner.startServer();
 			}
 		});
@@ -121,8 +153,7 @@ public class ServerPanel {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				// open the properties panel
-				PropertiesPanel ppanel = new PropertiesPanel();
-				ppanel.open();
+				new PropertiesPanel().open();
 			}
 		});
 		propertiesButton.setBounds(10, 136, 151, 25);

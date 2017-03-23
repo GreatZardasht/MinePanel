@@ -63,9 +63,6 @@ public class PropertiesPanel {
 			File propertiesFile = new File("server.properties");
 			if (propertiesFile.exists()) {
 				properties.load(new FileInputStream(propertiesFile));
-				for(String key : properties.stringPropertyNames()) {
-					String value = properties.getProperty(key);
-				}
 			} else {
 				ErrorHandler.displayError("Server.properties was not found. Start the server to create a new one.");
 				return;
@@ -122,13 +119,12 @@ public class PropertiesPanel {
 			}
 		}
 
-		Display display = Display.getDefault();
 		createContents();
 		shlProperties.open();
 		shlProperties.layout();
 		while (!shlProperties.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+			if (!Display.getDefault().readAndDispatch()) {
+				Display.getDefault().sleep();
 			}
 		}
 	}
@@ -248,11 +244,22 @@ public class PropertiesPanel {
 		Button btnAdvanced = new Button(shlProperties, SWT.NONE);
 		btnAdvanced.setBounds(331, 196, 130, 25);
 		btnAdvanced.setText("Advanced...");
+		
+		Button btnJavaOptions = new Button(shlProperties, SWT.NONE);
+		btnJavaOptions.setBounds(331, 135, 130, 28);
+		btnJavaOptions.setText("Java Settings...");
+		btnJavaOptions.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				// open the java settings panel
+				new JavaSettingsPanel().open();
+			}
+		});
+		
 		btnAdvanced.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				AdvancedPropertiesPanel aPP = new AdvancedPropertiesPanel();
-				aPP.open();
+				new AdvancedPropertiesPanel().open();
 			}
 		});
 	}

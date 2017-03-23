@@ -29,21 +29,4 @@ public class FileManager {
 		if (check == true) return true;
 		else return false;
 	}
-
-	public static void setProp(String propertyName, String propertyValue) {
-		if (checkProps() == true) {
-			try { // Try to read and write the file
-				FileWriter fw = new FileWriter(PROPS);
-				BufferedWriter bw = new BufferedWriter(fw);
-				FileReader fr = new FileReader(PROPS);
-				BufferedReader br = new BufferedReader(fr);
-			}
-			catch (Exception e) {
-				ErrorHandler.displayError("Error while writing to the server.properties file", e);
-			}
-		}
-		else {
-
-		}
-	}
 }
