@@ -28,6 +28,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Spinner;
 
 /**
  * Properties panel.
@@ -49,6 +51,7 @@ public class PropertiesPanel {
 	
 	public Shell shlProperties;
 	private Text motdBox;
+	private Text worldNameBox;
 	
 	
 	/**
@@ -56,7 +59,7 @@ public class PropertiesPanel {
 	 */
 	public void open() {
 		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
-		shlProperties.setSize(471, 302);
+		shlProperties.setSize(471, 348);
 		shlProperties.setText("Server Properties");
 		
 		try {
@@ -79,44 +82,7 @@ public class PropertiesPanel {
 			//	I just kept it
 			String[] p = {key, value};
 			
-			// this will determine which property it is looking at
-			switch(key) {
-			case "server-port":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "allow-nether":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "gamemode":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "difficulty":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "spawn-monsters":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "announce-player-achievements":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "pvp":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "enable-command-block":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "spawn-animals":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "white-list":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "motd":
-				propsHash.put(p[0], p[1]);
-				break;
-			case "generate-structures":
-				propsHash.put(p[0], p[1]);
-			}
+			propsHash.put(p[0], p[1]);
 		}
 
 		createContents();
@@ -139,10 +105,14 @@ public class PropertiesPanel {
 		motdBox = new Text(shlProperties, SWT.BORDER);
 		motdBox.setBounds(10, 31, 451, 21);
 		motdBox.setText(propsHash.get("motd"));
+
+		worldNameBox = new Text(shlProperties, SWT.BORDER);
+		worldNameBox.setBounds(10, 78, 451, 19);
+		worldNameBox.setText(propsHash.get("level-name"));
 		
 		Group grpGameSettings = new Group(shlProperties, SWT.NONE);
 		grpGameSettings.setText("Game Settings");
-		grpGameSettings.setBounds(10, 58, 315, 213);
+		grpGameSettings.setBounds(10, 103, 315, 213);
 		
 		Button btnPvp = new Button(grpGameSettings, SWT.CHECK);
 		btnPvp.setToolTipText("When turned on, players can hurt each other.");
@@ -201,8 +171,43 @@ public class PropertiesPanel {
 		btnCMDBlocks.setText("Enable command blocks");
 		setState(btnCMDBlocks, "enable-command-block");
 		
+		Combo modeBox = new Combo(shlProperties, SWT.NONE);
+		modeBox.setItems(new String[] {"Survival", "Creative", "Adventure", "Spectator"});
+		modeBox.setBounds(331, 123, 130, 28);
+		modeBox.select(0);
+		switch(propsHash.get("gamemode")) {
+		case "0":
+			modeBox.select(0);
+			break;
+		case "1":
+			modeBox.select(1);
+			break;
+		case "2":
+			modeBox.select(2);
+			break;
+		case "3":
+			modeBox.select(3);
+			break;
+		default:
+			modeBox.select(0);
+			break;
+		}
+		
+		Spinner portSpinner = new Spinner(shlProperties, SWT.BORDER);
+		portSpinner.setMaximum(65534);
+		portSpinner.setMinimum(1);
+		portSpinner.setSelection(25565);
+		portSpinner.setBounds(331, 171, 75, 22);
+		if (propsHash.get("server-port") != null) {
+			try {
+				portSpinner.setSelection(Integer.parseInt(propsHash.get("server-port")));
+			} catch (NumberFormatException e) {
+				portSpinner.setSelection(25566);
+			}
+		}
+		
 		Button btnSave = new Button(shlProperties, SWT.NONE);
-		btnSave.setBounds(331, 226, 130, 25);
+		btnSave.setBounds(331, 291, 130, 25);
 		btnSave.setText("Save and close");
 		btnSave.addMouseListener(new MouseAdapter() {
 			@Override
@@ -213,6 +218,12 @@ public class PropertiesPanel {
 					
 					// set motd
 					properties.setProperty("motd", motdBox.getText());
+					// set world name
+					properties.setProperty("level-name", worldNameBox.getText());
+					// set gamemode
+					properties.setProperty("gamemode", Integer.toString(modeBox.getSelectionIndex()));
+					// set server port
+					properties.setProperty("server-port", Integer.toString(portSpinner.getSelection()));
 					// set pvp
 					properties.setProperty("pvp", btnPvp.getSelection()?"true":"false");
 					// set mob spawning
@@ -242,12 +253,25 @@ public class PropertiesPanel {
 		});
 		
 		Button btnAdvanced = new Button(shlProperties, SWT.NONE);
-		btnAdvanced.setBounds(331, 196, 130, 25);
+		btnAdvanced.setBounds(331, 260, 130, 25);
 		btnAdvanced.setText("Advanced...");
 		
 		Button btnJavaOptions = new Button(shlProperties, SWT.NONE);
-		btnJavaOptions.setBounds(331, 135, 130, 28);
+		btnJavaOptions.setBounds(331, 226, 130, 28);
 		btnJavaOptions.setText("Java Settings...");
+		
+		Label lblWorld = new Label(shlProperties, SWT.NONE);
+		lblWorld.setBounds(10, 58, 130, 14);
+		lblWorld.setText("World name");
+		
+		Label lblNewLabel = new Label(shlProperties, SWT.NONE);
+		lblNewLabel.setBounds(331, 151, 59, 14);
+		lblNewLabel.setText("Port");
+		
+		Label lblGamemode = new Label(shlProperties, SWT.NONE);
+		lblGamemode.setBounds(331, 103, 107, 14);
+		lblGamemode.setText("Gamemode");
+			
 		btnJavaOptions.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
