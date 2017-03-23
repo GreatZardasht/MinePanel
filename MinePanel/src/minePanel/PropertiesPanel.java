@@ -177,16 +177,10 @@ public class PropertiesPanel {
 		modeBox.select(0);
 		switch(propsHash.get("gamemode")) {
 		case "0":
-			modeBox.select(0);
-			break;
 		case "1":
-			modeBox.select(1);
-			break;
 		case "2":
-			modeBox.select(2);
-			break;
 		case "3":
-			modeBox.select(3);
+			modeBox.select(Integer.parseInt(propsHash.get("gamemode")));
 			break;
 		default:
 			modeBox.select(0);

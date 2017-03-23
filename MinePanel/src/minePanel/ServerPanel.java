@@ -42,21 +42,6 @@ public class ServerPanel {
 	public Button propertiesButton;
 
 	/**
-	 * Launch the application.
-	 * @param args Same old args you always use lel
-	 */
-	public static void main(String[] args) {
-		try {
-			ServerPanel window = new ServerPanel();
-			window.open();
-		} catch (Exception e) {
-			//e.printStackTrace();
-			//I don't think any exception might be thrown here but why not.
-			ErrorHandler.displayError("Wow.", "Could not even show the main window, you might be having some big trouble", e);
-		}
-	}
-
-	/**
 	 * Open the window.
 	 */
 	public void open() {
@@ -82,7 +67,7 @@ public class ServerPanel {
 
 		consoleBox = new StyledText(shlMinepanel, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
 		consoleBox.setWrapIndent(40);
-		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 9, SWT.NORMAL));
+		consoleBox.setFont(SWTResourceManager.getFont("Lucida Console", 11, SWT.NORMAL));
 		consoleBox.setDoubleClickEnabled(false);
 		consoleBox.setEditable(false);
 		consoleBox.setBounds(167, 10, 597, 346);
