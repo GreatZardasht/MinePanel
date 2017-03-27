@@ -58,7 +58,7 @@ public class PropertiesPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	public void open() {
-		shlProperties = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
+		shlProperties = new Shell(Main.disp, SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shlProperties.setSize(471, 348);
 		shlProperties.setText("Server Properties");
 		
@@ -89,8 +89,8 @@ public class PropertiesPanel {
 		shlProperties.open();
 		shlProperties.layout();
 		while (!shlProperties.isDisposed()) {
-			if (!Display.getDefault().readAndDispatch()) {
-				Display.getDefault().sleep();
+			if (!Main.disp.readAndDispatch()) {
+				Main.disp.sleep();
 			}
 		}
 	}

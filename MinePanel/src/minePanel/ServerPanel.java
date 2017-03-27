@@ -49,8 +49,8 @@ public class ServerPanel {
 		shlMinepanel.open();
 		shlMinepanel.layout();
 		while (!shlMinepanel.isDisposed()) {
-			if (!Display.getDefault().readAndDispatch()) {
-				Display.getDefault().sleep();
+			if (!Main.disp.readAndDispatch()) {
+				Main.disp.sleep();
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class ServerPanel {
 	 */
 	protected void createContents() {
 		// disables the maximize button and resizing
-		shlMinepanel = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN);
+		shlMinepanel = new Shell(Main.disp, SWT.CLOSE | SWT.TITLE | SWT.MIN);
 		shlMinepanel.setSize(790, 427);
 		shlMinepanel.setText("MinePanel");
 

@@ -146,7 +146,7 @@ public class ServerRunner {
 			propsButton.setEnabled(false);
 
 			// this will load commands at the same time as everything else is happening. pretty handy for long lists of commands.
-			Display.getDefault().asyncExec(() -> {
+			Main.disp.asyncExec(() -> {
 				try {
 					if (new File("MPCommands.txt").exists()) {
 						consolePrint("[Minepanel] Loading custom commands...");
@@ -190,7 +190,7 @@ public class ServerRunner {
 			});
 
 			// listeners being added on another thread asyncronously
-			Display.getDefault().asyncExec(() -> {
+			Main.disp.asyncExec(() -> {
 				// add enter key listener for command line
 				if (!commandLine.isDisposed()) {
 					commandLine.addKeyListener(new KeyAdapter() {
@@ -312,7 +312,7 @@ public class ServerRunner {
 	 * @param line Line to print to the console box
 	 */
 	public void consolePrint(final String line) {
-		Display.getDefault().asyncExec(() -> {
+		Main.disp.asyncExec(() -> {
 			if (!consoleBox.isDisposed()) {
 				if (consoleBox.getText() == null || consoleBox.getText() == "") consoleBox.append(line);
 				else consoleBox.append(System.lineSeparator() + line);

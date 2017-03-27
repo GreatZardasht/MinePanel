@@ -11,9 +11,11 @@ import org.eclipse.swt.widgets.Display;
  */
 public class Main {
 	protected static ServerPanel _panel;
+	protected static Display disp;
 	
 	// perform main app setup upon startup
 	public Main() {
+		disp = new Display();
 		_panel = new ServerPanel();
 		_panel.open();
 	}

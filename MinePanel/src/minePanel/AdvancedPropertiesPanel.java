@@ -27,13 +27,12 @@ public class AdvancedPropertiesPanel {
 	private Text propertyValue;
 
 	public void open() {
-		Display display = Display.getDefault();
 		createContents();
 		shl.open();
 		shl.layout();
 		while (!shl.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+			if (!Main.disp.readAndDispatch()) {
+				Main.disp.sleep();
 			}
 		}
 	}
@@ -42,7 +41,7 @@ public class AdvancedPropertiesPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
-		shl = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
+		shl = new Shell(Main.disp, SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shl.setSize(268, 231);
 		shl.setText("Custom Property");
 

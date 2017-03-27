@@ -31,7 +31,7 @@ public class JavaSettingsPanel {
 	 * @wbp.parser.entryPoint
 	 */
 	public void open() {
-		shl = new Shell(SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
+		shl = new Shell(Main.disp, SWT.CLOSE | SWT.TITLE | SWT.MIN | SWT.APPLICATION_MODAL);
 		shl.setSize(471, 207);
 		shl.setText("Java Settings");
 		
@@ -136,8 +136,8 @@ public class JavaSettingsPanel {
 		shl.open();
 		shl.layout();
 		while (!shl.isDisposed()) {
-			if (!Display.getDefault().readAndDispatch()) {
-				Display.getDefault().sleep();
+			if (!Main.disp.readAndDispatch()) {
+				Main.disp.sleep();
 			}
 		}
 	}
