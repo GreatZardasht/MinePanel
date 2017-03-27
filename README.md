@@ -25,11 +25,12 @@ $ git clone https://github.com/willeccles/minepanel
 ```
 2. Then, go [here](http://download.eclipse.org/eclipse/downloads/) and under the “Latest Downloads” heading, choose the most recent version and click the link.
 3. On the page that brings you to, scroll down to the “SWT Binary and Source” section and get the appropriate one for your platform.
-4. Extract that archive. It should contain a folder called “org.eclipse.swt.” Copy the folder into the repository you cloned. Thus, the repository should contain README.md, Minepanel, a couple other things, and org.eclipse.swt.
+4. Extract that archive. It should contain a bunch of stuff, including swt.jar. Copy all that stuff into a folder called “org.eclipse.swt” in the Minepanel repository folder (right in the same place as README.md). Thus, the repository should contain README.md, Minepanel, a couple other things, and org.eclipse.swt.
 5. Open Eclipse. Go to File > Open Projects From Filesystem.
-6. Hit the Browse button and select BOTH of the folders in the repository: Minepanel and org.eclipse.swt.
-7. Right-click on Minepanel in Eclipse and go to Properties. Click on Java Build Path.
-8. Go to the Libraries tab. Click “Add External Jars…”
+6. Hit the “Directory” button and select the Minepanel folder in the repository. Click “Finish.”
+7. Now do the same thing for the “org.eclipse.swt” folder you just created. You should now have two projects open in Eclipse.
+7. Right-click on the Minepanel *project* (not the `minePanel` package!) in Eclipse and go to Properties. Click on Java Build Path.
+8. Go to the “Libraries” tab. Click “Add External Jars…”
 9. Browse to the org.eclipse.swt project you downloaded and select swt.jar.
 10. You should now be able to build and run the Minepanel project. Complicated? Yeah, kinda, but if it wasn’t done right you wouldn’t be able to use the project, so…
 
