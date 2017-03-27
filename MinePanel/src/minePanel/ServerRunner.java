@@ -12,7 +12,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Vector;
@@ -67,7 +69,7 @@ public class ServerRunner {
 	private ServerConsoleReader scr;
 	private String _motd; // since this will be used more than once but will only need to be loaded once, we can store it here
 
-	private HashMap<String, Vector<String>> customCommands = new HashMap<String, Vector<String>>();
+	private HashMap<String, List<String>> customCommands = new HashMap<String, List<String>>();
 
 	/**
 	 * Class resposible for running the server jar file.
@@ -152,7 +154,7 @@ public class ServerRunner {
 						Scanner s = new Scanner(new BufferedReader(new FileReader("MPCommands.txt")));
 
 						String commandName = "";
-						Vector<String> commandValue = new Vector<String>();
+						List<String> commandValue = new ArrayList<String>();
 
 						while(s.hasNext()) {
 							String line = s.nextLine();
@@ -164,12 +166,11 @@ public class ServerRunner {
 								}
 								// save the new command name and get it ready to add to the list
 								commandName = line.replaceAll("[^A-Za-z]", "");
-								commandValue.removeAllElements(); // empty the command value vector for reuse
-								commandValue.trimToSize();
+								commandValue = new ArrayList<String>();
 							}
 							else if (line.matches("^/.+$")) {
 								// add the command to the commands list
-								commandValue.addElement(line.replaceAll("^/", "").trim());
+								commandValue.add(line.replaceAll("^/", "").trim());
 							}
 						}
 
@@ -349,9 +350,9 @@ public class ServerRunner {
 					String[] parts = line.split(" ");
 					String uName = parts[3].replaceAll("(�[a-z0-9A-Z])", "");
 					if (!_motd.equals(null))
-						scr.command("tellraw " + uName + "[{\"text\":\"MOTD: \",\"bold\":true,\"color\":\"green\"},{\"text\":\"" + _motd + "\"}]");
-					scr.command("tellraw " + uName + " {\"text\":\"Welcome, " + uName + "! This server uses MinePanel. Use !commands\",\"color\":\"gold\"}");
-					scr.command("tellraw " + uName + " {\"text\":\"to see all the custom commands you can use here.\",\"color\":\"gold\"}");
+						scr.command("tellraw " + uName + " [{\"text\":\"MOTD: \",\"bold\":true,\"color\":\"green\"},{\"text\":\"" + _motd + "\",\"bold\":false}]");
+					scr.command("tellraw " + uName + " {\"text\":\"Welcome, " + uName + "! This server uses MinePanel.\",\"color\":\"gold\"}");
+					scr.command("tellraw " + uName + " {\"text\":\"Use !commands to see all the custom commands you can use here.\",\"color\":\"gold\"}");
 				}
 
 				// this is where it gets fun. we will now get into custom commands.
@@ -367,21 +368,25 @@ public class ServerRunner {
 						scr.command("tellraw " + uName + " {\"text\":\"Commands available through MinePanel:\",\"color\":\"green\",\"bold\":true}");
 						scr.command("tellraw " + uName + " [{\"text\":\"    !commands:\",\"bold\":false,\"color\":\"gold\"},{\"text\":\" shows this list\",\"color\":\"white\",\"italic\":true}]");
 						scr.command("tellraw " + uName + " [{\"text\":\"    !motd:\",\"bold\":false,\"color\":\"gold\"},{\"text\":\" shows the MOTD of the server\",\"color\":\"white\",\"italic\":true}]");
+						scr.command("tellraw " + uName + " [{\"text\":\"    !info:\",\"bold\":false,\"color\":\"gold\"},{\"text\":\" displays info about Minepanel\",\"color\":\"white\",\"italic\":true}]");
 
 						// iterate over the custom commands, if there are any
-						Iterator<Map.Entry<String, Vector<String>>> it = customCommands.entrySet().iterator();
+						Iterator<Entry<String, List<String>>> it = customCommands.entrySet().iterator();
 						while (it.hasNext()) {
-							Map.Entry<String, Vector<String>> pair = it.next();
-							scr.command("tellraw " + uName + " [{\"text\":\"    !" + pair.getKey() + "\",\"color\":\"gold\",\"bold\":true}]");
+							Entry<String, List<String>> pair = it.next();
+							scr.command("tellraw " + uName + " [{\"text\":\"    !" + pair.getKey() + "\",\"color\":\"gold\"}]");
 						}
 					}
 					else if (command.equals("motd")) {
 						if (!_motd.equals(null)) {
-							scr.command("tellraw @a [{\"text\":\"MOTD: \",\"bold\":true,\"color\":\"green\"},{\"text\":\"" + _motd + "\"}]");
+							scr.command("tellraw @a [{\"text\":\"MOTD: \",\"bold\":true,\"color\":\"green\"},{\"text\":\"" + _motd + "\",\"bold\":false}]");
 						} else {
 							scr.command("tellraw @a {\"text\":\"No MOTD set.\",\"color\":\"red\"}");
 						}
-					} else {
+					}
+					else if (command.equals("info")) {
+						scr.command("tellraw " + uName + " [{\"text\":\"Minepanel is a tool that allows users to run Minecraft servers without all the hassle. \",\"color\":\"gray\",\"italic\":true},{\"text\":\"Click here to learn more.\",\"color\":\"aqua\",\"underlined\":true,\"italic\":true,\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://github.com/willeccles/minepanel\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"github.com/willeccles/minepanel\"}]}},\"italic\":false}]");
+					}else {
 						if (!customCommands.containsKey(command)) {
 							scr.command("tellraw " + uName + " {\"text\":\"Command '!" + command + "' does not exist.\",\"color\":\"red\"}");
 						}
