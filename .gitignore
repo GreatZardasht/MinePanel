@@ -1,1 +1,13 @@
 /org.eclipse.swt/
+
+*.command
+
+*.zip
+
+*.jar
+
+MinePanel/\.idea/
+
+*.iml
+
+MinePanel/\.classpath
